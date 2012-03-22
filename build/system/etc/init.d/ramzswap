@@ -1,0 +1,18 @@
+#!/system/bin/sh
+
+log -p i -t init.d/ramzswap start
+
+sysctl -w vm.swappiness=30;
+
+insmod /system/lib/modules/lzo_compress.ko
+insmod /system/lib/modules/lzo_decompress.ko
+insmod /system/lib/modules/ramzswap.ko num_devices=4;
+
+for i in 0 1 2 3;
+do \
+rzscontrol /dev/block/ramzswap$i --reset;
+rzscontrol /dev/block/ramzswap$i --init;
+busybox swapon -p 1 /dev/block/ramzswap$i;
+done;
+
+log -p i -t init.d/ramzswap end

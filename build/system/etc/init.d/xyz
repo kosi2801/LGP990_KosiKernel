@@ -1,0 +1,21 @@
+#!/system/bin/sh
+
+chmod 0755 /proc;
+chmod 0777 /proc/spica;
+chmod 0777 /proc/spica/*;
+#echo "916000" > /proc/spica/mincpu1on;
+#echo "800000" > /proc/spica/#maxcpu2off;
+rm  /data/spicabootcfg/*.bak;
+echo `cat /data/spicabootcfg/gpufreq` > /proc/spica/gpufreq;
+echo `cat /data/spicabootcfg/vdefreq` > /proc/spica/vdefreq;
+echo `cat /data/spicabootcfg/mincpu1on` > /proc/spica/mincpu1on;
+echo `cat /data/spicabootcfg/maxcpu1off` > /proc/spica/maxcpu1off;
+echo `cat /data/spicabootcfg/powersave` > /proc/spica/powersave;
+echo `cat /data/spicabootcfg/ddr2_min_khz` > /proc/spica/ddr2_min_khz;
+echo `cat /data/spicabootcfg/lpddr2_min_khz` > /proc/spica/lpddr2_min_khz;
+echo `cat /data/spicabootcfg/suspend_core_mv` > /proc/spica/suspend_core_mv;
+echo `cat /data/spicabootcfg/screenoff_maxcpufreq` > /proc/spica/screenoff_maxcpufreq;
+echo `cat /data/spicabootcfg/nitros` > /proc/spica/nitros;
+echo `cat /data/spicabootcfg/strong_vibe` > /proc/spica/strong_vibe; 
+ln -s /proc/spica /data/spica; 
+rm  /data/spicabootcfg/*.bak; 
