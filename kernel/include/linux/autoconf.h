@@ -1,7 +1,7 @@
 /*
  * Automatically generated C config: don't edit
- * Linux kernel version: 2.6.32.9-Kosi002-HP_RC12SR1R-powered
- * Sun Mar 18 12:33:16 2012
+ * Linux kernel version: 2.6.32.9-Kosi003-HP_RC12SR1R-powered
+ * Tue Mar 20 15:45:18 2012
  */
 #define AUTOCONF_INCLUDED
 #define CONFIG_ANDROID 1
@@ -497,6 +497,7 @@
 #define CONFIG_STAR_FOTA 1
 #define CONFIG_TRACE_IRQFLAGS_SUPPORT 1
 #define CONFIG_PM_SLEEP_SMP 1
+#define CONFIG_ALLOW_CPU_ALIGNMENT 1
 #define CONFIG_RFKILL 1
 #define CONFIG_TEGRA_USB_CHARGE 1
 #define CONFIG_USB_GADGET_TEGRA 1

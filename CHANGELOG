@@ -6,3 +6,33 @@ Based on Spica SR3R
 -- remove hardware drivers for nonexisting hardware
 -- remove unneeded protocol drivers 
 
+002
+- reverted experimental battery driver to default
+- changed compilation parameters to spicas srr3, changed to hardfloat
+- BCM4329 fixes from NVIDIA linux 2.6 trunk
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=fc4d5028cab51af9c25a0b9afaadfe1383e0b2eb -- MEMLEAK fix
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=25a87f387fe0421153a528b7dc70b96bea4842cd
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=6755660d8aa0cdb32be3849f61704c645c6d7f67
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=04dd4dc82b0960ff95c3adc58c07da3ce699a67f
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=4beca48ac9132fdaf09fc08f6954459238dd9c16
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=ed69630837778717dca8b9863d7501de06c7b7cd
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=71249003a92fb56a85f7edc8c28c70ae1bb1fd87
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=5c58e03b81e1ac1231f1ae68e4611c31f428f2f9
+
+003
+- BCM 4329 fixes from NVIDIA linux 2.6 trunk
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=4c0d9cf8d550d5a2b4318f950127fdc086e5b023 -- MEMLEAK fix
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=438f97f7bd3127a95174ee8c36c6826bd9ba11ea
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=02ba58ef8811d41ef61242af71be30437fdbb847
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=cf95ed1acdf1b56de9d1b26e1077ce367cbd65dc
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=c59f49309ecb2beb973cd89c7547496967e31134
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=9edc2cc0fbfc94fddeaaf20a47e1b4c8e7d424f4
+- https://github.com/SetiroN/lge-kernel-star/commit/e1eba9859f1ae31aa4818758c10f6d78bf17cfda
+
+TODO:
+- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=60463e0ed16e0af62120db55b4c2f4c8b64acf64
+- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=04dd4dc82b0960ff95c3adc58c07da3ce699a67f
+- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=0b59165a49eec6bf9bda100ee7b9bca988ac89b8
+- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=e441e5767944c4a64bfa9200a5a1edd18e1a052d
+
+

@@ -556,7 +556,7 @@ deps_config := \
 include/config/auto.conf: \
 	$(deps_config)
 
-ifneq "$(KERNELVERSION)" "2.6.32.9-Kosi002-HP_RC12SR1R-powered"
+ifneq "$(KERNELVERSION)" "2.6.32.9-Kosi003-HP_RC12SR1R-powered"
 include/config/auto.conf: FORCE
 endif
 ifneq "$(ARCH)" "arm"
