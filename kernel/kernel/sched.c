@@ -308,9 +308,7 @@ static int init_task_group_load = INIT_TASK_GROUP_LOAD;
 /* Default task group.
  *	Every task in system belong to this group at bootup.
  */
-#define CONFIG_CGROUP_SCHED
-#define CONFIG_SMP
-#if defined (CONFIG_CGROUP_SCHED) && defined (CONFIG_SMP)
+#if defined (CONFIG_CGROUP_SCHED)
 struct task_group init_task_group;
 static inline struct task_group *autogroup_task_group(struct task_struct *p, struct task_group *tg);
 /* return group to which a task belongs */
@@ -1820,7 +1818,10 @@ static void dec_nr_running(struct rq *rq)
 
 static void set_load_weight(struct task_struct *p)
 {
-
+/*if (task_has_rt_policy(p)) {
+		p->se.load.weight = prio_to_weight[0] * 2;
+		p->se.load.inv_weight = prio_to_wmult[0] >> 1;
+		return;*/
 
 	/*
 	 * SCHED_IDLE tasks get minimal weight:
@@ -2590,7 +2591,23 @@ void sched_fork(struct task_struct *p, int clone_flags)
 
 	put_cpu();
 }
+/*#ifdef CONFIG_PREEMPT_COUNT_CPU*/
 
+/*
+ * Fetch the preempt count of some cpu's current task.  Must be called
+* with interrupts blocked.  Stale return value.
+*
+* No locking needed as this always wins the race with context-switch-out
+ * + task destruction, since that is so heavyweight.  The smp_rmb() is
+ * to protect the pointers in that race, not the data being pointed to
+ * (which, being guaranteed stale, can stand a bit of fuzziness).
+*/
+/*int preempt_count_cpu(int cpu)
+{
+	smp_rmb();  stop data prefetch until program ctr gets here */
+	/*return task_thread_info(cpu_curr(cpu))->preempt_count;
+}*/
+/*#endif*/
 /*
  * wake_up_new_task - wake up a newly created task for the first time.
  *
@@ -4706,7 +4723,7 @@ int select_nohz_load_balancer(int stop_tick)
 		if (!cpumask_test_cpu(cpu, nohz.cpu_mask))
 			return 0;
 
-//cpumask_clear_cpu(cpu, nohz.cpu_mask);
+cpumask_clear_cpu(cpu, nohz.cpu_mask);
 
 		if (atomic_read(&nohz.load_balancer) == cpu)
 			if (atomic_cmpxchg(&nohz.load_balancer, cpu, -1) != cpu)
@@ -9432,7 +9449,7 @@ void __init sched_init(void)
 			global_rt_period(), global_rt_runtime());
 #endif /* CONFIG_RT_GROUP_SCHED */
 
-#if defined (CONFIG_CGROUP_SCHED) && defined (CONFIG_SMP)
+#ifdef CONFIG_CGROUP_SCHED
 	list_add(&init_task_group.list, &task_groups);
 	INIT_LIST_HEAD(&init_task_group.children);
 autogroup_init(&init_task);
@@ -9892,7 +9909,7 @@ static inline void unregister_rt_sched_group(struct task_group *tg, int cpu)
 }
 #endif /* CONFIG_RT_GROUP_SCHED */
 
-#if defined CONFIG_CGROUP_SCHED && defined (CONFIG_SMP)
+#if defined CONFIG_CGROUP_SCHED && defined CONFIG_SMP
 static void free_sched_group(struct task_group *tg)
 {
 	free_fair_sched_group(tg);

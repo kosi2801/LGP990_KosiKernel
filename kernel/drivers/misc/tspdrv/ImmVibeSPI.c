@@ -31,8 +31,8 @@
 #define VIBE_PROCFS_NAME   "strong_vibe"
 #define VIBE_PROCFS_SIZE     2
 static struct proc_dir_entry *VIBE_Proc_File;
-static char procfs_buffer_vibe[VIBE_PROCFS_SIZE];
-static unsigned long procfs_buffer_size_vibe = 0;
+static char procfs_buffer29[VIBE_PROCFS_SIZE];
+static unsigned long procfs_buffer_size211 = 0;
 
 int vibe_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
 int ret;
@@ -40,8 +40,8 @@ printk(KERN_INFO "vibe_procfile_read (/proc/spica/%s) called\n", VIBE_PROCFS_NAM
 if (offset > 0) {
 ret  = 0;
 } else {
-memcpy(buffer, procfs_buffer_vibe, procfs_buffer_size_vibe);
-ret = procfs_buffer_size_vibe;
+memcpy(buffer, procfs_buffer29, procfs_buffer_size211);
+ret = procfs_buffer_size211;
 
 }
 return ret;
@@ -50,20 +50,20 @@ return ret;
 int vibe_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
 unsigned int temp2;
 temp2=0;
-if ( sscanf(buffer,"%d",&temp2) < 0 )  return procfs_buffer_size_vibe;
-if ( temp2 < 0 || temp2 > 1 ) return procfs_buffer_size_vibe;
+if ( sscanf(buffer,"%d",&temp2) < 0 )  return procfs_buffer_size211;
+if ( temp2 < 0 || temp2 > 1 ) return procfs_buffer_size211;
 
 
-procfs_buffer_size_vibe = count;
-	if (procfs_buffer_size_vibe > VIBE_PROCFS_SIZE ) {
-		procfs_buffer_size_vibe = VIBE_PROCFS_SIZE;
+procfs_buffer_size211 = count;
+	if (procfs_buffer_size211 > VIBE_PROCFS_SIZE ) {
+		procfs_buffer_size211 = VIBE_PROCFS_SIZE;
 	}
-if ( copy_from_user(procfs_buffer_vibe, buffer, procfs_buffer_size_vibe) ) {
+if ( copy_from_user(procfs_buffer29, buffer, procfs_buffer_size211) ) {
 printk(KERN_INFO "buffer_size error\n");
 return -EFAULT;
 }
-sscanf(procfs_buffer_vibe,"%u",&VIBEONOFF);
-return procfs_buffer_size_vibe;
+sscanf(procfs_buffer29,"%u",&VIBEONOFF);
+return procfs_buffer_size211;
 }
 
 static int __init init_vibe_procsfs(void)
@@ -85,8 +85,8 @@ VIBE_Proc_File->mode     = S_IFREG | S_IRUGO;
 VIBE_Proc_File->uid     = 0;
 VIBE_Proc_File->gid     = 0;
 VIBE_Proc_File->size     = 37;
-sprintf(procfs_buffer_vibe,"%d",VIBEONOFF);
-procfs_buffer_size_vibe=strlen(procfs_buffer_vibe);
+sprintf(procfs_buffer29,"%d",VIBEONOFF);
+procfs_buffer_size211=strlen(procfs_buffer29);
 printk(KERN_INFO "/proc/spica/%s created\n", VIBE_PROCFS_NAME);
 
 }

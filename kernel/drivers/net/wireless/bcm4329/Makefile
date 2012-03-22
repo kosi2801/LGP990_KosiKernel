@@ -53,9 +53,10 @@ EXTRA_CFLAGS = \
 	-DBCMLXSDMMC \
 	-DBCMPLATFORM_BUS \
 	-DSDIO_ISR_THREAD \
-	-Wall -Wstrict-prototypes -Werror \
+	-Wall -Wstrict-prototypes -Werror -Wno-unused-but-set-variable -Wno-array-bounds \
 	-I$(SRCROOT) \
 	-I$(SRCROOT)/include \
+-Wno-array-bounds \
 	-I$(SRCROOT)/shared \
 	-I$(SRCROOT)/dhd/sys \
 	-I$(SRCROOT)/dongle \
@@ -79,7 +80,9 @@ EXTRA_CFLAGS = \
 	-Iinclude/asm/mach-default \
 	-DBCMEMBEDIMAGE="<dongle/rte/wl/builds/4325b0/sdio-g-cdc-reclaim-idsup-wme/rtecdc.h>" \
 
+ifeq ($(CONFIG_BRCM_LGE_WL_PKTFILTER),y)
 EXTRA_CFLAGS += -DPKT_FILTER_SUPPORT
+endif
 ifeq ($(CONFIG_BRCM_LGE_WL_ARPOFFLOAD),y)
 EXTRA_CFLAGS += -DARP_OFFLOAD_SUPPORT
 endif

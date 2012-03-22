@@ -149,6 +149,8 @@
 DHD_SPINWAIT_SLEEP_INIT(sdioh_spinwait_sleep);
 extern int dhdcdc_set_ioctl(dhd_pub_t *dhd, int ifidx, uint cmd, void *buf, uint len);
 
+extern void bcmsdh_set_irq(int flag);
+
 #ifdef DHD_DEBUG
 /* Device console log buffer state */
 typedef struct dhd_console {
@@ -5816,11 +5818,18 @@ dhd_bus_devreset(dhd_pub_t *dhdp, uint8 flag)
 			/* Force flow control as protection when stop come before ifconfig_down */
 			dhd_txflowcontrol(bus->dhd, 0, ON);
 #endif /* !defined(IGNORE_ETH0_DOWN) */
+
+#if !defined(OOB_INTR_ONLY)
+			/* to avoid supurious client interrupt during stop process */
+			bcmsdh_stop(bus->sdh);
+#endif /* !defined(OOB_INTR_ONLY) */
+
 			/* Expect app to have torn down any connection before calling */
 			/* Stop the bus, disable F2 */
 			dhd_bus_stop(bus, FALSE);
-
-			/* Clean tx/rx buffer pointers, detach from the dongle */
+#if defined(OOB_INTR_ONLY)
+                        bcmsdh_set_irq(FALSE);
+#endif /* defined(OOB_INTR_ONLY) */			/* Clean tx/rx buffer pointers, detach from the dongle */
 			dhdsdio_release_dongle(bus, bus->dhd->osh);
 
 			bus->dhd->dongle_reset = TRUE;
@@ -5855,6 +5864,7 @@ dhd_bus_devreset(dhd_pub_t *dhdp, uint8 flag)
 					bcmerror = dhd_bus_init((dhd_pub_t *) bus->dhd, FALSE);
 					if (bcmerror == BCME_OK) {
 #if defined(OOB_INTR_ONLY)
+                                                bcmsdh_set_irq(TRUE);
 						dhd_enable_oob_intr(bus, TRUE);
 #endif /* defined(OOB_INTR_ONLY) */
 

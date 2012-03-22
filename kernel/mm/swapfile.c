@@ -577,9 +577,9 @@ static int swap_entry_free(struct swap_info_struct *p,
 	count = p->swap_map[offset];
 	/* free if no reference */
 	if (!count) {
-//#if defined (CONFIG_RAMZSWAP)
+#if defined (CONFIG_RAMZSWAP)
         struct gendisk *disk = p->bdev->bd_disk; 
-//#endif
+#endif
 		if (offset < p->lowest_bit)
 			p->lowest_bit = offset;
 		if (offset > p->highest_bit)
@@ -588,10 +588,10 @@ static int swap_entry_free(struct swap_info_struct *p,
 			swap_list.next = p - swap_info;
 		nr_swap_pages++;
 		p->inuse_pages--;
-//#if defined (CONFIG_RAMZSWAP)
+#if defined (CONFIG_RAMZSWAP)
         if (disk->fops->swap_slot_free_notify)
            disk->fops->swap_slot_free_notify(p->bdev, offset);
-//#endif
+#endif
 	}
 	if (!swap_count(count))
 		mem_cgroup_uncharge_swap(ent);

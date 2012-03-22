@@ -35,7 +35,6 @@
 #define D_PROXI     22
 #define D_MAX       23	//The Last item
 
-#ifdef CONFIG_LPRINTK
 struct lprintk_info_struct {
         char *name;
         int enable;
@@ -43,6 +42,7 @@ struct lprintk_info_struct {
 
 extern struct lprintk_info_struct lge_debug[];
 
+#ifdef CONFIG_LPRINTK
 #define lprintk(type, fmt, args...) do { \
         if (!lge_debug[type].enable) \
                 break; \

@@ -41,83 +41,83 @@
 #include "ap20/arapbpm.h"
 #include "ap15/ap15rm_private.h"
 #include "nvodm_query.h"
-#define VDE_PROCFS_NAME   "vdefreq"
-#define VDE_PROCFS_SIZE     8
-static struct proc_dir_entry *VDE_Proc_File;
+#define PROCFS_NAME   "vdefreq"
+#define PROCFS_SIZE     8
+static struct proc_dir_entry *GPU_Proc_File;
 static struct proc_dir_entry *spica_dir;
-static char procfs_buffer_vde[VDE_PROCFS_SIZE];
-static unsigned long procfs_buffer_size_vde = 0;
+static char procfs_buffer61[PROCFS_SIZE];
+static unsigned long procfs_buffer_size610 = 0;
 
-int vde_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
+int gpu_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
 int ret;
-printk(KERN_INFO "vde_procfile_read (/proc/spica/%s) called\n", VDE_PROCFS_NAME);
+printk(KERN_INFO "gpu_procfile_read (/proc/spica/%s) called\n", PROCFS_NAME);
 if (offset > 0) {
 ret  = 0;
 } else {
-memcpy(buffer, procfs_buffer_vde, procfs_buffer_size_vde);
-ret = procfs_buffer_size_vde;
+memcpy(buffer, procfs_buffer61, procfs_buffer_size610);
+ret = procfs_buffer_size610;
 
 }
 return ret;
 }
 
-int vde_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
+int gpu_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
 int temp;
 temp=0;
-if ( sscanf(buffer,"%d",&temp) < 1 ) return procfs_buffer_size_vde;
-if ( temp < 500000 || temp > 710000 ) return procfs_buffer_size_vde;
+if ( sscanf(buffer,"%d",&temp) < 1 ) return procfs_buffer_size610;
+if ( temp < 500000 || temp > 710000 ) return procfs_buffer_size610;
 
-procfs_buffer_size_vde = count;
-	if (procfs_buffer_size_vde > VDE_PROCFS_SIZE ) {
-		procfs_buffer_size_vde = VDE_PROCFS_SIZE;
+procfs_buffer_size610 = count;
+	if (procfs_buffer_size610 > PROCFS_SIZE ) {
+		procfs_buffer_size610 = PROCFS_SIZE;
 	}
-if ( copy_from_user(procfs_buffer_vde, buffer, procfs_buffer_size_vde) ) {
+if ( copy_from_user(procfs_buffer61, buffer, procfs_buffer_size610) ) {
 printk(KERN_INFO "buffer_size error\n");
 return -EFAULT;
 }
-sscanf(procfs_buffer_vde,"%u",&VDEFREQ);
-//if ( VDEFREQ < 216000 || VDEFREQ > 1100000 ) {
-return procfs_buffer_size_vde;
+sscanf(procfs_buffer61,"%u",&GPUFREQ);
+//if ( GPUFREQ < 216000 || GPUFREQ > 1100000 ) {
+return procfs_buffer_size610;
 }
 
 
-static int __init init_vde_procsfs(void)
+static int __init init_gpu_procsfs(void)
 {
 //int rv = 0;
-VDE_Proc_File = spica_add(VDE_PROCFS_NAME);
+GPU_Proc_File = spica_add(PROCFS_NAME);
 //spica_dir = proc_mkdir("spica", NULL); 
 
-//VDE_Proc_File = create_proc_entry(VDE_PROCFS_NAME, 0755, spica_dir);
-if (VDE_Proc_File == NULL) {
-spica_remove(VDE_PROCFS_NAME);
-printk(KERN_ALERT "Error: Could not initialize /proc/spica/%s\n", VDE_PROCFS_NAME);
+//GPU_Proc_File = create_proc_entry(PROCFS_NAME, 0755, spica_dir);
+if (GPU_Proc_File == NULL) {
+spica_remove(PROCFS_NAME);
+printk(KERN_ALERT "Error: Could not initialize /proc/spica/%s\n", PROCFS_NAME);
 return -ENOMEM;
 } else {
-VDE_Proc_File->read_proc  = vde_procfile_read;
-VDE_Proc_File->write_proc = vde_procfile_write;
-//VDE_Proc_File->owner     = THIS_MODULE;
-VDE_Proc_File->mode     = S_IFREG | S_IRUGO;
-VDE_Proc_File->uid     = 0;
-VDE_Proc_File->gid     = 0;
-VDE_Proc_File->size     = 37;
-sprintf(procfs_buffer_vde,"%d",VDEFREQ);
-procfs_buffer_size_vde=strlen(procfs_buffer_vde);
-printk(KERN_INFO "/proc/spica/%s created\n", VDE_PROCFS_NAME);
+GPU_Proc_File->read_proc  = gpu_procfile_read;
+GPU_Proc_File->write_proc = gpu_procfile_write;
+//GPU_Proc_File->owner     = THIS_MODULE;
+GPU_Proc_File->mode     = S_IFREG | S_IRUGO;
+GPU_Proc_File->uid     = 0;
+GPU_Proc_File->gid     = 0;
+GPU_Proc_File->size     = 37;
+sprintf(procfs_buffer61,"%d",GPUFREQ);
+procfs_buffer_size610=strlen(procfs_buffer61);
+printk(KERN_INFO "/proc/spica/%s created\n", PROCFS_NAME);
 //return 0;
 }
 return 0;
 }
-module_init(init_vde_procsfs);
+module_init(init_gpu_procsfs);
 
 
-static void __exit cleanup_vde_procsfs(void) {
-//printk(KERN_INFO "/proc/spica/%s removed\n", VDE_PROCFS_NAME);
-spica_remove(VDE_PROCFS_NAME);
-//remove_proc_entry(VDE_PROCFS_NAME, NULL);
-//remove_proc_entry(VDE_PROCFS_NAME, NULL);
-printk(KERN_INFO "/proc/spica/%s removed\n", VDE_PROCFS_NAME);
+static void __exit cleanup_gpu_procsfs(void) {
+//printk(KERN_INFO "/proc/spica/%s removed\n", PROCFS_NAME);
+spica_remove(PROCFS_NAME);
+//remove_proc_entry(PROCFS_NAME, NULL);
+//remove_proc_entry(CPU_PROCFS_NAME, NULL);
+printk(KERN_INFO "/proc/spica/%s removed\n", PROCFS_NAME);
 }
-module_exit(cleanup_vde_procsfs);
+module_exit(cleanup_gpu_procsfs);
 
 // Enable CPU/EMC ratio policy
 #define NVRM_LIMIT_CPU_EMC_RATIO (1)
@@ -1291,10 +1291,10 @@ Ap20SystemClockSourceFind(
     {
         C1KHz = M1KHz = DomainKHz;
         c = NvRmPrivFindFreqMinAbove(NvRmClockDivider_Fractional_2,
-                VDEFREQ,
+                GPUFREQ,
                 MaxKHz, &C1KHz);
         m = NvRmPrivFindFreqMinAbove(NvRmClockDivider_Fractional_2,
-        VDEFREQ,
+        GPUFREQ,
                 MaxKHz, &M1KHz);
 
         SourceKHz = NV_MAX(NV_MAX(C1KHz, M1KHz), P2KHz);

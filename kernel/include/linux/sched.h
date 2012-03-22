@@ -552,7 +552,7 @@ struct thread_group_cputimer {
 	int running;
 	spinlock_t lock;
 };
-//struct autogroup;
+struct autogroup;
 /*
  * NOTE! "signal_struct" does not have it's own
  * locking, because a shared signal_struct always
