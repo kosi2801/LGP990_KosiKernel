@@ -1,0 +1,5 @@
+#!/system/bin/sh
+
+/system/xbin/busybox mount -o remount,nosuid,nodev,noauto_da_alloc,data=writeback,nobh,noatime,barrier=0 /data
+/system/xbin/busybox mount -o remount,nodev,noauto_da_alloc,data=writeback,nobh,noatime,barrier=0 /system
+/system/xbin/busybox mount -o remount,nosuid,nodev,noauto_da_alloc,data=writeback,nobh,noatime,barrier=0  /cache

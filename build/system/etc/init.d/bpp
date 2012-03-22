@@ -1,0 +1,7 @@
+#!/system/bin/sh
+umount /dev/block/mmcblk0p8
+e2fsck -fpDC0 /dev/block/mmcblk0p8
+mount -o rw /dev/block/mmcblk0p8 /data
+umount /cache
+busybox mount -t ext4 -o rw /dev/block/mmcblk0p2 /cache
+setprop e2fsck.data.done 1
