@@ -39,6 +39,7 @@ obj-$(CONFIG_RINETWORK_DRIVER) += rindrv.o
 obj-$(CONFIG_LOGGER)		+= logger.o
 
 obj-$(CONFIG_STAR_WM8994_TEST)	+= star_wm8994.o
+obj-$(CONFIG_STAR_WM8994_VOODOO)  += star_wm8994_voodoo.o
 
 #20100827, jay.sim@lge.com
 obj-$(CONFIG_STAR_GYRO_ACCEL)	+= sensor/
@@ -74,3 +75,4 @@ obj-$(CONFIG_STAR_FOTA)	+= star_fota.o
 
 #dohyung10.lee@lge.com
 obj-$(CONFIG_STAR_BD_ADDRESS)	+= star_bd_address.o
+obj-y				+= star_vib.o

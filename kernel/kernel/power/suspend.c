@@ -128,6 +128,7 @@ void __attribute__ ((weak)) arch_suspend_enable_irqs(void)
  *
  *	This function should be called after devices have been suspended.
  */
+//extern unsigned long int oldminclock;
 static int suspend_enter(suspend_state_t state)
 {
 	int error;
@@ -172,7 +173,7 @@ static int suspend_enter(suspend_state_t state)
 
 	arch_suspend_enable_irqs();
 	BUG_ON(irqs_disabled());
-
+//oldminclock=300000;
  Enable_cpus:
 	enable_nonboot_cpus();
 

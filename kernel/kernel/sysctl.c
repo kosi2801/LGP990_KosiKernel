@@ -50,6 +50,7 @@
 #include <linux/ftrace.h>
 #include <linux/slow-work.h>
 #include <linux/perf_event.h>
+//#include <linux/spica.h>
 
 #include <asm/uaccess.h>
 #include <asm/processor.h>
@@ -59,12 +60,14 @@
 #include <asm/stacktrace.h>
 #include <asm/io.h>
 #endif
+//#include <linux/spica.h>
 
 static int deprecated_sysctl_warning(struct __sysctl_args *args);
 
 #if defined(CONFIG_SYSCTL)
 
 /* External variables not in a header file. */
+
 extern int C_A_D;
 extern int print_fatal_signals;
 extern int sysctl_overcommit_memory;
@@ -128,7 +131,8 @@ extern int modules_disabled;
 #ifdef CONFIG_CHR_DEV_SG
 extern int sg_big_buff;
 #endif
-
+//extern int carveout_size = CARVEOUT;
+//int __read_mostly const int CARVEOUT = carveout_size;
 #ifdef CONFIG_SPARC
 #include <asm/system.h>
 #endif
@@ -260,6 +264,14 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= &proc_dointvec,
 	},
+/*{
+.procname = "carveout_size",
+.data = &carveout_size,
+.maxlen = sizeof(int),
+.mode = 0666,
+.proc_handler = proc_dointvec,
+},*/
+
 #ifdef CONFIG_SCHED_DEBUG
 	{
 		.ctl_name	= CTL_UNNUMBERED,
@@ -380,6 +392,17 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= &proc_dointvec,
 	},
+
+	{
+		.procname	= "sched_autogroup_enabled",
+		.data		= &sysctl_sched_autogroup_enabled,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+		.extra1		= &zero,
+		.extra2		= &one,
+	},
+
 #ifdef CONFIG_PROVE_LOCKING
 	{
 		.ctl_name	= CTL_UNNUMBERED,

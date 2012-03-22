@@ -574,11 +574,6 @@ static int set_user(struct cred *new)
 	if (!new_user)
 		return -EAGAIN;
 
-	if (!task_can_switch_user(new_user, current)) {
-		free_uid(new_user);
-		return -EINVAL;
-	}
-
 	if (atomic_read(&new_user->processes) >=
 				current->signal->rlim[RLIMIT_NPROC].rlim_cur &&
 			new_user != INIT_USER) {
@@ -588,6 +583,7 @@ static int set_user(struct cred *new)
 
 	free_uid(new->user);
 	new->user = new_user;
+//sched_autogroup_create_attach(current);
 	return 0;
 }
 
@@ -1117,8 +1113,10 @@ SYSCALL_DEFINE0(setsid)
 	err = session;
 out:
 	write_unlock_irq(&tasklist_lock);
-	if (err > 0)
+	if (err > 0) {
 		proc_sid_connector(group_leader);
+sched_autogroup_create_attach(group_leader);
+}
 	return err;
 }
 

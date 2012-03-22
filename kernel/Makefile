@@ -1,7 +1,7 @@
 VERSION = 2
 PATCHLEVEL = 6
 SUBLEVEL = 32
-EXTRAVERSION = .9
+EXTRAVERSION = .9-HP-2X-Xtreme-SR3R-Final-NoOC-OTFv2
 NAME = Man-Eating Seals of Antiquity
 
 # *DOCUMENTATION*
@@ -323,12 +323,12 @@ CHECK		= sparse
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-MODFLAGS	= -DMODULE
-CFLAGS_MODULE   = $(MODFLAGS)
+MODFLAGS	= -DMODULE -O2 -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
+CFLAGS_MODULE   = $(MODFLAGS) 
 AFLAGS_MODULE   = $(MODFLAGS)
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
-CFLAGS_KERNEL	=
-AFLAGS_KERNEL	=
+CFLAGS_KERNEL	= -O2 -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
+AFLAGS_KERNEL	= -O2 -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 # 20100705, sunghoon.kim@lge.com,[LGE_START]
@@ -542,9 +542,10 @@ endif # $(dot-config)
 all: vmlinux
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS	+= -Os
-else
 KBUILD_CFLAGS	+= -O2
+else
+KBUILD_CFLAGS	+= -O2 -march=armv7-a -mtune=cortex-a9 -mfloat-abi=softfp -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -fsingle-precision-constant
+
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile

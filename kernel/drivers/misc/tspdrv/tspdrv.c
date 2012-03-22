@@ -97,10 +97,10 @@ static ssize_t 	read(	struct file *file, 	char *buf, 		size_t count, 		loff_t *p
 static ssize_t 	write(	struct file *file, 	const char *buf, 	size_t count, 		loff_t *ppos		);
 static int 		ioctl(		struct inode *inode, 	struct file *file, 	unsigned int cmd, 	unsigned long arg	);
 
-//20101218 km.lee@lge.com vib disable on reboot [START]
+//20101218  vib disable on reboot [START]
 static int 		brr_open(	struct inode *inode, 	struct file *file										);
 static ssize_t 	brr_write(	struct file *file, 	const char *buf, 	size_t count, 		loff_t *ppos		);
-//20101218 km.lee@lge.com vib disable on reboot [END]
+//20101218  vib disable on reboot [END]
 
 static struct 	file_operations fops = 
 {
@@ -121,7 +121,7 @@ static struct miscdevice miscdev =
 };
 #endif
 
-//20101218 km.lee@lge.com vib disable on reboot [START]
+//20101218  vib disable on reboot [START]
 static struct 	file_operations brr_fop = 
 {
 	.owner	=	THIS_MODULE,
@@ -135,7 +135,7 @@ static struct miscdevice brr_misc =
 	.name 	=   BRR_NAME,
 	.fops 	=   &brr_fop
 };
-//20101218 km.lee@lge.com vib disable on reboot [END]
+//20101218  vib disable on reboot [END]
 
 static int 		suspend( struct platform_device *pdev, pm_message_t state ) ;
 static int 		resume( struct platform_device *pdev );
@@ -198,7 +198,7 @@ int __init tspdrv_init( void )
 		return nRet;
 	}
 #endif
-//20101218 km.lee@lge.com vib disable on reboot 
+//20101218  vib disable on reboot 
 	misc_register( &brr_misc );
 
 #ifdef NVIDIA_TSPDRV
@@ -275,7 +275,7 @@ static int open( struct inode *inode, struct file *file )
 
 }
 
-//20101218 km.lee@lge.com vib disable on reboot [START]
+//20101218  vib disable on reboot [START]
 static int brr_open( struct inode *inode, struct file *file ) 
 {
 
@@ -287,7 +287,7 @@ static int brr_open( struct inode *inode, struct file *file )
     	return 0; 
 
 }
-//20101218 km.lee@lge.com vib disable on reboot [END]
+//20101218  vib disable on reboot [END]
 
 static int release( struct inode *inode, struct file *file ) 
 {
@@ -335,7 +335,7 @@ static ssize_t read( struct file *file, char *buf, size_t count, loff_t *ppos )
 
 }
 
-//20100111 km.lee@lge.com vib disable on reboot 2nd[START]
+//20100111  vib disable on reboot 2nd[START]
 static ssize_t brr_write( struct file *file, const char *buf, size_t count, loff_t *ppos )
 {
 	if( !strncmp(buf, "OFF", 3 )){
@@ -349,7 +349,7 @@ static ssize_t brr_write( struct file *file, const char *buf, size_t count, loff
 	}
 	return count;
 }
-//20100111 km.lee@lge.com vib disable on reboot 2nd [END]
+//20100111  vib disable on reboot 2nd [END]
 
 static ssize_t write( struct file *file, const char *buf, size_t count, loff_t *ppos )
 {
@@ -568,4 +568,5 @@ static void platform_release( struct device *dev )
 
 module_init( tspdrv_init );
 module_exit( tspdrv_exit );
+
 

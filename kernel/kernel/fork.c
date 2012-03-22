@@ -917,7 +917,9 @@ static int copy_signal(unsigned long clone_flags, struct task_struct *tsk)
 	acct_init_pacct(&sig->pacct);
 
 	tty_audit_fork(sig);
-
+//#ifdef CONFIG_SCHED_AUTOGROUP
+sched_autogroup_fork(sig);
+//#endif
 	sig->oom_adj = current->signal->oom_adj;
 
 	return 0;
@@ -927,6 +929,9 @@ void __cleanup_signal(struct signal_struct *sig)
 {
 	thread_group_cputime_free(sig);
 	tty_kref_put(sig->tty);
+//#ifdef CONFIG_SCHED_AUTOGROUP
+sched_autogroup_exit(sig);
+//#endif
 	kmem_cache_free(signal_cachep, sig);
 }
 
@@ -1139,7 +1144,7 @@ static struct task_struct *copy_process(unsigned long clone_flags,
 
 	p->bts = NULL;
 
-	p->stack_start = stack_start;
+p->stack_start = stack_start;
 
 	/* Perform scheduler related setup. Assign this task to a CPU. */
 	sched_fork(p, clone_flags);

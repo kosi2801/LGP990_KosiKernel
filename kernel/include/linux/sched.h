@@ -1,5 +1,6 @@
 #ifndef _LINUX_SCHED_H
 #define _LINUX_SCHED_H
+#include <linux/spica.h>
 
 /*
  * cloning flags:
@@ -61,7 +62,6 @@ struct sched_param {
 #include <linux/errno.h>
 #include <linux/nodemask.h>
 #include <linux/mm_types.h>
-
 #include <asm/system.h>
 #include <asm/page.h>
 #include <asm/ptrace.h>
@@ -552,7 +552,7 @@ struct thread_group_cputimer {
 	int running;
 	spinlock_t lock;
 };
-
+//struct autogroup;
 /*
  * NOTE! "signal_struct" does not have it's own
  * locking, because a shared signal_struct always
@@ -618,7 +618,9 @@ struct signal_struct {
 	int leader;
 
 	struct tty_struct *tty; /* NULL if no tty */
-
+//#ifdef CONFIG_SCHED_AUTOGROUP
+struct autogroup *autogroup;
+//#endif
 	/*
 	 * Cumulative resource counters for dead threads in the group,
 	 * and for reaped dead child processes forked by this group.
@@ -726,13 +728,6 @@ struct user_struct {
 	uid_t uid;
 	struct user_namespace *user_ns;
 
-#ifdef CONFIG_USER_SCHED
-	struct task_group *tg;
-#ifdef CONFIG_SYSFS
-	struct kobject kobj;
-	struct delayed_work work;
-#endif
-#endif
 
 #ifdef CONFIG_PERF_EVENTS
 	atomic_long_t locked_vm;
@@ -1538,8 +1533,9 @@ struct task_struct {
 	/* bitmask of trace recursion */
 	unsigned long trace_recursion;
 #endif /* CONFIG_TRACING */
-	unsigned long stack_start;
+unsigned long stack_start;
 };
+
 
 /* Future-safe accessor for struct task_struct's cpus_allowed. */
 #define tsk_cpumask(tsk) (&(tsk)->cpus_allowed)
@@ -1895,7 +1891,7 @@ extern void wake_up_idle_cpu(int cpu);
 #else
 static inline void wake_up_idle_cpu(int cpu) { }
 #endif
-
+//extern void force_cpu_resched(int cpu);
 extern unsigned int sysctl_sched_latency;
 extern unsigned int sysctl_sched_min_granularity;
 extern unsigned int sysctl_sched_wakeup_granularity;
@@ -1932,6 +1928,19 @@ int sched_rt_handler(struct ctl_table *table, int write,
 		loff_t *ppos);
 
 extern unsigned int sysctl_sched_compat_yield;
+//#ifdef CONFIG_SCHED_AUTOGROUP
+extern unsigned int sysctl_sched_autogroup_enabled;
+extern void sched_autogroup_create_attach(struct task_struct *p);
+extern void sched_autogroup_detach(struct task_struct *p);
+extern void sched_autogroup_fork(struct signal_struct *sig);
+extern void sched_autogroup_exit(struct signal_struct *sig);
+extern void proc_sched_autogroup_show_task(struct task_struct *p, struct seq_file *m);
+//#else
+//static inline void sched_autogroup_create_attach(struct task_struct *p) { }
+//static inline void sched_autogroup_detach(struct task_struct *p) { }
+//static inline void sched_autogroup_fork(struct signal_struct *sig) { }
+//static inline void sched_autogroup_exit(struct signal_struct *sig) { }
+//#endif
 
 #ifdef CONFIG_RT_MUTEXES
 extern int rt_mutex_getprio(struct task_struct *p);
@@ -1946,6 +1955,10 @@ static inline int rt_mutex_getprio(struct task_struct *p)
 #endif
 
 extern void set_user_nice(struct task_struct *p, long nice);
+#ifdef CFS_BOOST
+extern void sched_privileged_task(struct task_struct *p);
+extern int sysctl_sched_privileged_nice_level;
+#endif
 extern int task_prio(const struct task_struct *p);
 extern int task_nice(const struct task_struct *p);
 extern int can_nice(const struct task_struct *p, const int nice);
@@ -2493,13 +2506,10 @@ extern long sched_getaffinity(pid_t pid, struct cpumask *mask);
 
 extern void normalize_rt_tasks(void);
 
-#ifdef CONFIG_GROUP_SCHED
+#ifdef CONFIG_CGROUP_SCHED
 
 extern struct task_group init_task_group;
-#ifdef CONFIG_USER_SCHED
-extern struct task_group root_task_group;
-extern void set_tg_uid(struct user_struct *user);
-#endif
+
 
 extern struct task_group *sched_create_group(struct task_group *parent);
 extern void sched_destroy_group(struct task_group *tg);
