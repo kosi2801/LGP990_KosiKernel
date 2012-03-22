@@ -65,7 +65,6 @@ static int debug_enable_flag = 1;//Debug
 static int debug_enable_flag = 0;//Release
 #endif
 
-#endif//CONFIG_DEBUG_FS
 
 
 /*
@@ -79,6 +78,10 @@ static int debug_enable_flag = 0;//Release
 #else
 #define DBG(x...) do { } while(0)
 #endif
+
+#else
+#define DBG(x...) do { } while(0)
+#endif//CONFIG_DEBUG_FS
 
 
 #if !defined(TRUE)

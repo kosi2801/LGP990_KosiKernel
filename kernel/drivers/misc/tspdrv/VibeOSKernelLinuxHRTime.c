@@ -231,4 +231,3 @@ static void VibeOSKernelLinuxTerminateTimer( void )
     VibeOSKernelLinuxStopTimer();
     if (VibeSemIsLocked(&g_hMutex)) up(&g_hMutex);
 }
-

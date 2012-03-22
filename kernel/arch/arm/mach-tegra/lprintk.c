@@ -13,7 +13,6 @@
 #include <linux/debugfs.h>
 #include <mach/lprintk.h>
 
-#if defined(CONFIG_DEBUG_FS)
 /* XXX: the index must be synced with D_XXX definition in lprintk.h */
 struct lprintk_info_struct lge_debug[D_MAX] = {
 #ifdef CONFIG_LPRINTK_ALL
@@ -68,6 +67,7 @@ struct lprintk_info_struct lge_debug[D_MAX] = {
 #endif  /* CONFIG_LPRINTK_ALL */
 };
 
+#if defined(CONFIG_DEBUG_FS)
 static int lprintk_enable_set(void *data, u64 val)
 {
         struct lprintk_info_struct *dbg  = data;

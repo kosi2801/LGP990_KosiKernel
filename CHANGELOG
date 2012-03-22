@@ -1,0 +1,8 @@
+Based on Spica SR3R
+
+001
+- changed kernel config
+-- disable as much debugging-support as possible
+-- remove hardware drivers for nonexisting hardware
+-- remove unneeded protocol drivers 
+

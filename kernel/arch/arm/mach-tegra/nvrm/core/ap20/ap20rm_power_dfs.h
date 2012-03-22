@@ -247,7 +247,7 @@ extern "C"
 //#define NVRM_CPU1_ON_MIN_KHZ (MIN_CPU_ON * 1000)
 //#define NVRM_CPU1_OFF_MAX_KHZ (915000)
 
-#define NVRM_CPU1_ON_PENDING_MS (1800)
+#define NVRM_CPU1_ON_PENDING_MS (2000)
 //#define NVRM_CPU1_OFF_PENDING_MS (600)
 
 /**
@@ -271,7 +271,7 @@ extern "C"
  */
 #define NVRM_DTT_DEGREES_HIGH           (90L)
 #define NVRM_DTT_DEGREES_LOW            (60L)
-#define NVRM_DTT_DEGREES_HYSTERESIS     (8L)
+#define NVRM_DTT_DEGREES_HYSTERESIS     (5L)
 
 #define NVRM_DTT_VOLTAGE_THROTTLE_MV    (NvRmVoltsMaximum)
 #define NVRM_DTT_CPU_DELTA_KHZ          (100000UL)

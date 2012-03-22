@@ -6,21 +6,21 @@
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
 
+#define USE_FAKE_SHMOO
 
 //extern unsigned int USE_FAKE_SHMOO;
 
 extern unsigned int NVRM_CPU1_ON_MIN_KHZ;
 extern unsigned int NVRM_CPU1_OFF_MAX_KHZ;
-extern unsigned int VDEFREQ;
 extern unsigned int GPUFREQ;
-extern unsigned int PWONOFF;
+extern unsigned int GPUFBFREQ;
+extern unsigned int OCUVONOFF;
 extern unsigned int NITROONOFF;
 extern unsigned int NVRM_CPU1_OFF_PENDING_MS;
 extern unsigned int VIBEONOFF;
 extern const unsigned int NVRM_AP20_SUSPEND_CORE_MV;
 extern unsigned int NVRM_AP20_LOW_CORE_MV;
 extern unsigned int NVRM_AP20_LOW_CPU_MV;
-extern unsigned int BLONOFF;
 //extern unsigned int VM_MAX_READAHEAD;
 //extern unsigned int swappiness;
 //extern unsigned int vm_swappiness;

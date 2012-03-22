@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <linux/spica.h>
+
 #include "nvcommon.h"
 #include "nvrm_clocks.h"
 #include "nvassert.h"
@@ -40,9 +40,88 @@
 #include "nvrm_memmgr.h"
 #include "ap15/ap15rm_private.h"
 #include "ap15/project_relocation_table.h"
+#include <linux/spica.h>
+#include <linux/spica.h>
+#define GPU_PROCFS_NAME   "gpufreq"
+#define GPU_PROCFS_SIZE     8
+static struct proc_dir_entry *GPUFB_Proc_File;
+static struct proc_dir_entry *spica_dir;
+static char procfs_buffer000[GPU_PROCFS_SIZE];
+static unsigned long procfs_buffer000_size000 = 0;
+
+int gpufb_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
+int ret;
+printk(KERN_INFO "gpufb_procfile_read (/proc/spica/%s) called\n", GPU_PROCFS_NAME);
+if (offset > 0) {
+ret  = 0;
+} else {
+memcpy(buffer, procfs_buffer000, procfs_buffer000_size000);
+ret = procfs_buffer000_size000;
+
+}
+return ret;
+}
+
+int gpufb_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
+int temp;
+temp=0;
+if ( sscanf(buffer,"%d",&temp) < 1 ) return procfs_buffer000_size000;
+if ( temp < 280000 || temp > 380000 ) return procfs_buffer000_size000;
+
+procfs_buffer000_size000 = count;
+	if (procfs_buffer000_size000 > GPU_PROCFS_SIZE ) {
+		procfs_buffer000_size000 = GPU_PROCFS_SIZE;
+	}
+if ( copy_from_user(procfs_buffer000, buffer, procfs_buffer000_size000) ) {
+printk(KERN_INFO "buffer_size error\n");
+return -EFAULT;
+}
+sscanf(procfs_buffer000,"%u",&GPUFBFREQ);
+//if ( GPUFBFREQ < 216000 || GPUFBFREQ > 1100000 ) {
+return procfs_buffer000_size000;
+}
 
 
-#undef USE_FAKE_SHMOO
+static int __init init_gpufb_procsfs(void)
+{
+//int rv = 0;
+GPUFB_Proc_File = spica_add(GPU_PROCFS_NAME);
+//spica_dir = proc_mkdir("spica", NULL); 
+
+//GPUFB_Proc_File = create_proc_entry(GPU_PROCFS_NAME, 0755, spica_dir);
+if (GPUFB_Proc_File == NULL) {
+spica_remove(GPU_PROCFS_NAME);
+printk(KERN_ALERT "Error: Could not initialize /proc/spica/%s\n", GPU_PROCFS_NAME);
+return -ENOMEM;
+} else {
+GPUFB_Proc_File->read_proc  = gpufb_procfile_read;
+GPUFB_Proc_File->write_proc = gpufb_procfile_write;
+//GPUFB_Proc_File->owner     = THIS_MODULE;
+GPUFB_Proc_File->mode     = S_IFREG | S_IRUGO;
+GPUFB_Proc_File->uid     = 0;
+GPUFB_Proc_File->gid     = 0;
+GPUFB_Proc_File->size     = 37;
+sprintf(procfs_buffer000,"%d",GPUFBFREQ);
+procfs_buffer000_size000=strlen(procfs_buffer000);
+printk(KERN_INFO "/proc/spica/%s created\n", GPU_PROCFS_NAME);
+//return 0;
+}
+return 0;
+}
+module_init(init_gpufb_procsfs);
+
+
+static void __exit cleanup_gpufb_procsfs(void) {
+//printk(KERN_INFO "/proc/spica/%s removed\n", GPU_PROCFS_NAME);
+spica_remove(GPU_PROCFS_NAME);
+//remove_proc_entry(GPU_PROCFS_NAME, NULL);
+//remove_proc_entry(CPU_GPU_PROCFS_NAME, NULL);
+printk(KERN_INFO "/proc/spica/%s removed\n", GPU_PROCFS_NAME);
+}
+module_exit(cleanup_gpufb_procsfs);
+
+//extern int OC();
+#define USE_FAKE_SHMOO
 #ifdef USE_FAKE_SHMOO
 
 #include <linux/kernel.h>
@@ -83,14 +162,14 @@ NvRmCpuShmoo fake_CpuShmoo; // Pointer to fake CpuShmoo values
 NvU32 FakeShmooVmaxIndex = 7; // Max voltage index in the voltage tab (size-1)
 
 NvU32 FakeShmooVoltages[] = {
-775,
-810,
-860,
-910,
-1025,
-1070,
-1150,
-1250
+	775,
+	810,
+	860,
+	910,
+	1030,
+	1070,
+	1150,
+	1250
 };
 
 NvRmScaledClkLimits FakepScaledCpuLimits = {
@@ -112,85 +191,7 @@ NvRmScaledClkLimits FakepScaledCpuLimits = {
 
 #endif // USE_FAKE_SHMOO
 
-#define GPU_PROCFS_NAME   "GPUFREQ"
-#define GPU_PROCFS_SIZE     8
-static struct proc_dir_entry *GPU_Proc_File;
-static struct proc_dir_entry *spica_dir;
-static char procfs_buffer_gpu[GPU_PROCFS_SIZE];
-static unsigned long procfs_buffer_size_gpu = 0;
 
-int gpu_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
-int ret;
-printk(KERN_INFO "gpu_procfile_read (/proc/spica/%s) called\n", GPU_PROCFS_NAME);
-if (offset > 0) {
-ret  = 0;
-} else {
-memcpy(buffer, procfs_buffer_gpu, procfs_buffer_size_gpu);
-ret = procfs_buffer_size_gpu;
-
-}
-return ret;
-}
-
-int gpu_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
-int temp;
-temp=0;
-if ( sscanf(buffer,"%d",&temp) < 1 ) return procfs_buffer_size_gpu;
-if ( temp < 280000 || temp > 400000 ) return procfs_buffer_size_gpu;
-
-procfs_buffer_size_gpu = count;
-	if (procfs_buffer_size_gpu > GPU_PROCFS_SIZE ) {
-		procfs_buffer_size_gpu = GPU_PROCFS_SIZE;
-	}
-if ( copy_from_user(procfs_buffer_gpu, buffer, procfs_buffer_size_gpu) ) {
-printk(KERN_INFO "buffer_size error\n");
-return -EFAULT;
-}
-sscanf(procfs_buffer_gpu,"%u",&GPUFREQ);
-//if ( GPUFREQ < 216000 || GPUFREQ > 1100000 ) {
-return procfs_buffer_size_gpu;
-}
-
-
-static int __init init_gpu_procsfs(void)
-{
-//int rv = 0;
-GPU_Proc_File = spica_add(GPU_PROCFS_NAME);
-//spica_dir = proc_mkdir("spica", NULL); 
-
-//GPU_Proc_File = create_proc_entry(GPU_PROCFS_NAME, 0755, spica_dir);
-if (GPU_Proc_File == NULL) {
-spica_remove(GPU_PROCFS_NAME);
-printk(KERN_ALERT "Error: Could not initialize /proc/spica/%s\n", GPU_PROCFS_NAME);
-return -ENOMEM;
-} else {
-GPU_Proc_File->read_proc  = gpu_procfile_read;
-GPU_Proc_File->write_proc = gpu_procfile_write;
-//GPU_Proc_File->owner     = THIS_MODULE;
-GPU_Proc_File->mode     = S_IFREG | S_IRUGO;
-GPU_Proc_File->uid     = 0;
-GPU_Proc_File->gid     = 0;
-GPU_Proc_File->size     = 37;
-sprintf(procfs_buffer_gpu,"%d",GPUFREQ);
-procfs_buffer_size_gpu=strlen(procfs_buffer_gpu);
-printk(KERN_INFO "/proc/spica/%s created\n", GPU_PROCFS_NAME);
-//return 0;
-}
-return 0;
-}
-module_init(init_gpu_procsfs);
-
-
-static void __exit cleanup_gpu_procsfs(void) {
-//printk(KERN_INFO "/proc/spica/%s removed\n", GPU_PROCFS_NAME);
-spica_remove(GPU_PROCFS_NAME);
-//remove_proc_entry(GPU_PROCFS_NAME, NULL);
-//remove_proc_entry(CPU_GPU_PROCFS_NAME, NULL);
-printk(KERN_INFO "/proc/spica/%s removed\n", GPU_PROCFS_NAME);
-}
-module_exit(cleanup_gpu_procsfs);
-
-//extern int OC();
 #define NvRmPrivGetStepMV(hRmDevice, step) \
          (s_ChipFlavor.pSocShmoo->ShmooVoltages[(step)])
 
@@ -340,8 +341,8 @@ NvRmPrivClockLimitsInit(NvRmDeviceHandle hRmDevice)
     }
 s_ClockRangeLimits[2].MaxKHz = 280000;
 s_ClockRangeLimits[7].MaxKHz = 320000;
-s_ClockRangeLimits[8].MaxKHz = 350000;
-s_ClockRangeLimits[10].MaxKHz = 400000;
+s_ClockRangeLimits[8].MaxKHz = 380000;
+s_ClockRangeLimits[10].MaxKHz = 380000;
     // Fill in CPU scaling data if SoC has dedicated CPU rail, and CPU clock
     // characterization data is separated from other modules on common core rail
     if (s_ChipFlavor.pCpuShmoo)
@@ -419,10 +420,10 @@ s_ClockRangeLimits[10].MaxKHz = 400000;
         NVRM_SDRAM_MIN_KHZ;
 
     // Set 3D upper clock boundary with combined Absolute/Scaled limit.
-    TDMaxKHz = GPUFREQ; // pSKUedLimits->TDMaxKHz;
+    TDMaxKHz = GPUFBFREQ; // pSKUedLimits->TDMaxKHz;
     TDMaxKHz = NV_MIN(
         TDMaxKHz, s_ClockRangeLimits[NvRmModuleID_3D].MaxKHz);
-    s_ClockRangeLimits[NvRmModuleID_3D].MaxKHz = GPUFREQ;
+    s_ClockRangeLimits[NvRmModuleID_3D].MaxKHz = GPUFBFREQ;
 
     // Set Display upper clock boundary with combined Absolute/Scaled limit.
     // (fill in clock limits for both display heads)

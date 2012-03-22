@@ -8,15 +8,14 @@ unsigned int NVRM_CPU1_ON_MIN_KHZ = 816000; //Default value should be changed he
 unsigned int NVRM_CPU1_OFF_MAX_KHZ = 860000;
 
 //unsigned int RAMHACK;
-unsigned int VDEFREQ = 690000;
-unsigned int GPUFREQ = 340000;
-unsigned int PWONOFF = 0;
+unsigned int GPUFREQ = 690000;
+unsigned int GPUFBFREQ = 345000;
+unsigned int OCUVONOFF = 0;
 unsigned int NITROONOFF = 0;
-unsigned int NVRM_AP20_LOW_CORE_MV = 910;
+unsigned int NVRM_AP20_LOW_CORE_MV = 925;
 
 unsigned int NVRM_AP20_LOW_CPU_MV = 770;
 unsigned int VIBEONOFF = 0;
-unsigned int BLONOFF = 0;
 
 //#define NVRM_AP20_LOW_CPU_MV (770)
 //#endif
