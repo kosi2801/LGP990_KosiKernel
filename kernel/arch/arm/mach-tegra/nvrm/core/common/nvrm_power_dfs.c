@@ -51,6 +51,197 @@
 #include "ap15/ap15rm_clocks.h"
 #include "ap20/ap20rm_power_dfs.h"
 #include "ap20/ap20rm_clocks.h"
+#include <linux/spica.h>
+#undef USE_FAKE_SHMOO
+#ifdef USE_FAKE_SHMOO
+#include <linux/kernel.h>
+
+
+/*
+ * TEGRA AP20 CPU OC/UV Hack by Cpasjuste @ https://github.com/Cpasjuste/android_kernel_lg_p990
+ */
+
+extern NvRmCpuShmoo fake_CpuShmoo; // Pointer to fake CpuShmoo
+extern int *FakeShmoo_UV_mV_Ptr; // Stored voltage table from cpufreq sysfs
+NvRmDfs *fakeShmoo_Dfs; // Used to get temp from cpufreq
+
+#endif // USE_FAKE_SHMOO
+
+#define PW_PROCFS_NAME   "powersave"
+#define PW_PROCFS_SIZE     2
+#define NITRO_PROCFS_NAME   "nitros"
+#define NITRO_PROCFS_SIZE     2
+//extern unsigned long int USE_FG;
+static struct proc_dir_entry *PW_Proc_File;
+static char procfs_buffer[PW_PROCFS_SIZE];
+static unsigned long procfs_buffer_size = 0;
+static struct proc_dir_entry *NITRO_Proc_File;
+static char procfs_buffer_nitro[NITRO_PROCFS_SIZE];
+static unsigned long procfs_buffer_size_nitro = 0;
+
+int pw_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
+int ret;
+printk(KERN_INFO "pw_procfile_read (/proc/spica/%s) called\n", PW_PROCFS_NAME);
+if (offset > 0) {
+ret  = 0;
+} else {
+memcpy(buffer, procfs_buffer, procfs_buffer_size);
+//USE_FG=PWONOFF;
+ret = procfs_buffer_size;
+
+}
+return ret;
+}
+int nitro_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
+int ret;
+printk(KERN_INFO "nitro_procfile_read (/proc/spica/%s) called\n", NITRO_PROCFS_NAME);
+if (offset > 0) {
+ret  = 0;
+} else {
+memcpy(buffer, procfs_buffer_nitro, procfs_buffer_size_nitro);
+//USE_FG=PWONOFF;
+ret = procfs_buffer_size_nitro;
+
+}
+return ret;
+}
+
+int pw_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
+int temp2;
+temp2=0;
+if ( sscanf(buffer,"%d",&temp2) < 0 )  return procfs_buffer_size;
+if ( temp2 < 0 || temp2 > 6 ) return procfs_buffer_size;
+//if ( temp2 == 1 ) { extern unsigned int USE_FAKE_SHMOO; }
+
+//if ( temp2 == 1 ) return USE_FAKE_SHMOO
+
+procfs_buffer_size = count;
+	if (procfs_buffer_size > PW_PROCFS_SIZE ) {
+		procfs_buffer_size = PW_PROCFS_SIZE;
+	}
+if ( copy_from_user(procfs_buffer, buffer, procfs_buffer_size) ) {
+printk(KERN_INFO "buffer_size error\n");
+return -EFAULT;
+}
+sscanf(procfs_buffer,"%u",&PWONOFF);
+//USE_FG=PWONOFF;
+return procfs_buffer_size;
+}
+int nitro_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
+int temp8;
+temp8=0;
+if ( sscanf(buffer,"%d",&temp8) < 0 )  return procfs_buffer_size_nitro;
+if ( temp8 < 0 || temp8 > 1 ) return procfs_buffer_size_nitro;
+//if ( temp8 == 1 ) { extern unsigned int USE_FAKE_SHMOO; }
+
+//if ( temp8 == 1 ) return USE_FAKE_SHMOO
+
+procfs_buffer_size_nitro = count;
+	if (procfs_buffer_size_nitro > NITRO_PROCFS_SIZE ) {
+		procfs_buffer_size_nitro = NITRO_PROCFS_SIZE;
+	}
+if ( copy_from_user(procfs_buffer_nitro, buffer, procfs_buffer_size_nitro) ) {
+printk(KERN_INFO "buffer_size error\n");
+return -EFAULT;
+}
+sscanf(procfs_buffer_nitro,"%u",&NITROONOFF);
+//USE_FG=PWONOFF;
+return procfs_buffer_size_nitro;
+}
+
+
+static int __init init_pw_procsfs(void)
+{
+//int rv = 0;
+PW_Proc_File = spica_add(PW_PROCFS_NAME);
+//spica_dir = proc_mkdir("spica", NULL); 
+
+//PW_Proc_File = create_proc_entry(PW_PROCFS_NAME, 0755, spica_dir);
+if (PW_Proc_File == NULL) {
+spica_remove(PW_PROCFS_NAME);
+printk(KERN_ALERT "Error: Could not initialize /proc/spica/%s\n", PW_PROCFS_NAME);
+return -ENOMEM;
+} else {
+PW_Proc_File->read_proc  = pw_procfile_read;
+PW_Proc_File->write_proc = pw_procfile_write;
+//PW_Proc_File->owner     = THIS_MODULE;
+PW_Proc_File->mode     = S_IFREG | S_IRUGO;
+PW_Proc_File->uid     = 0;
+PW_Proc_File->gid     = 0;
+PW_Proc_File->size     = 37;
+sprintf(procfs_buffer,"%d",PWONOFF);
+procfs_buffer_size=strlen(procfs_buffer);
+printk(KERN_INFO "/proc/spica/%s created\n", PW_PROCFS_NAME);
+
+}
+
+return 0;
+}
+module_init(init_pw_procsfs);
+static int __init init_nitro_procsfs(void)
+{
+//int rv = 0;
+NITRO_Proc_File = spica_add(NITRO_PROCFS_NAME);
+//spica_dir = proc_mkdir("spica", NULL); 
+
+//NITRO_Proc_File = create_proc_entry(NITRO_PROCFS_NAME, 0755, spica_dir);
+if (NITRO_Proc_File == NULL) {
+spica_remove(NITRO_PROCFS_NAME);
+printk(KERN_ALERT "Error: Could not initialize /proc/spica/%s\n", NITRO_PROCFS_NAME);
+return -ENOMEM;
+} else {
+NITRO_Proc_File->read_proc  = nitro_procfile_read;
+NITRO_Proc_File->write_proc = nitro_procfile_write;
+//NITRO_Proc_File->owner     = THIS_MODULE;
+NITRO_Proc_File->mode     = S_IFREG | S_IRUGO;
+NITRO_Proc_File->uid     = 0;
+NITRO_Proc_File->gid     = 0;
+NITRO_Proc_File->size     = 37;
+sprintf(procfs_buffer_nitro,"%d",NITROONOFF);
+procfs_buffer_size_nitro=strlen(procfs_buffer_nitro);
+printk(KERN_INFO "/proc/spica/%s created\n", NITRO_PROCFS_NAME);
+
+}
+
+return 0;
+}
+module_init(init_nitro_procsfs);
+
+
+static void __exit cleanup_pw_procsfs(void) {
+//printk(KERN_INFO "/proc/spica/%s removed\n", PW_PROCFS_NAME);
+spica_remove(PW_PROCFS_NAME);
+printk(KERN_INFO "/proc/spica/%s removed\n", PW_PROCFS_NAME);
+}
+module_exit(cleanup_pw_procsfs);
+
+static void __exit cleanup_nitro_procsfs(void) {
+//printk(KERN_INFO "/proc/spica/%s removed\n", NITRO_PROCFS_NAME);
+spica_remove(NITRO_PROCFS_NAME);
+printk(KERN_INFO "/proc/spica/%s removed\n", NITRO_PROCFS_NAME);
+}
+module_exit(cleanup_nitro_procsfs);
+
+//#define	OCCHECK
+//#define	OCCHECK (PWONOFF)
+
+
+
+//#define OCCHECK OcCheck()
+
+// #if ( PWONOFF == 1 ) {
+//#include <linux/kernel.h>
+
+/*
+ * TEGRA AP20 CPU OC/UV Hack by Cpasjuste @ https://github.com/Cpasjuste/android_kernel_lg_p990
+ */
+
+//extern NvRmCpuShmoo fake_CpuShmoo; // Pointer to fake CpuShmoo
+//extern int *FakeShmoo_UV_mV_Ptr; // Stored voltage table from cpufreq sysfs
+//NvRmDfs *fakeShmoo_Dfs; // Used to get temp from cpufreq
+
+//#endif // USE_FAKE_SHMOO
+//}
 
 /*****************************************************************************/
 
@@ -810,6 +1001,11 @@ static void DfsParametersInit(NvRmDfs* pDfs)
         pDfs->LowCornerKHz.Domains[i] = pDfs->DfsParameters[i].MinKHz;
         pDfs->HighCornerKHz.Domains[i] = pDfs->DfsParameters[i].MaxKHz;
     }
+#ifdef USE_FAKE_SHMOO
+	// Set maximum scaling frequency to 1000mhz at boot
+	pDfs->HighCornerKHz.Domains[NvRmDfsClockId_Cpu] = 1015000;
+
+#endif
     pDfs->CpuCornersShadow.MinKHz =
         pDfs->LowCornerKHz.Domains[NvRmDfsClockId_Cpu];
     pDfs->CpuCornersShadow.MaxKHz =
@@ -1843,6 +2039,12 @@ NvError NvRmPrivDfsInit(NvRmDeviceHandle hRmDeviceHandle)
     NvError error;
     NvRmDfsFrequencies DfsKHz;
     NvRmDfs* pDfs = &s_Dfs;
+	
+#ifdef USE_FAKE_SHMOO
+
+    fakeShmoo_Dfs = &s_Dfs; // Crappy way to get temp ?!
+#endif
+
 
     NV_ASSERT(hRmDeviceHandle);
     DfsHintsPrintInit();
@@ -2226,6 +2428,23 @@ DvsChangeCpuVoltage(
     NvRmDvs* pDvs,
     NvRmMilliVolts TargetMv)
 {
+#ifdef USE_FAKE_SHMOO
+
+	// Voltage hack
+	int i = 0;
+	if( FakeShmoo_UV_mV_Ptr != NULL )
+	{
+		for(i=0; i <fake_CpuShmoo.ShmooVmaxIndex+1; i++)
+		{
+			if(fake_CpuShmoo.ShmooVoltages[i] == TargetMv)
+			{
+				TargetMv -= FakeShmoo_UV_mV_Ptr[i];
+				break;
+			}
+		}
+	}
+#endif // USE_FAKE_SHMOO
+
     NV_ASSERT(TargetMv >= pDvs->MinCpuMv);
     NV_ASSERT(TargetMv <= pDvs->NominalCpuMv);
 
@@ -3704,3 +3923,5 @@ NvRmDiagGetTemperature(
             return NvError_NotSupported;
     }
 }
+
+

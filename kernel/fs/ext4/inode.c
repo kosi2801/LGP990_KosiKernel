@@ -1193,8 +1193,11 @@ static pgoff_t ext4_num_dirty_pages(struct inode *inode, pgoff_t idx,
 				break;
 			idx++;
 			num++;
-			if (num >= max_pages)
+			if (num >= max_pages) {
+
+        done = 1;
 				break;
+}
 		}
 		pagevec_release(&pvec);
 	}
@@ -1801,7 +1804,7 @@ static int ext4_journalled_write_end(struct file *file,
 	if (new_i_size > inode->i_size)
 		i_size_write(inode, pos+copied);
 	EXT4_I(inode)->i_state |= EXT4_STATE_JDATA;
-	if (new_i_size > EXT4_I(inode)->i_disksize) {
+	if (copied && new_i_size > EXT4_I(inode)->i_disksize) {
 		ext4_update_i_disksize(inode, new_i_size);
 		ret2 = ext4_mark_inode_dirty(handle, inode);
 		if (!ret)
@@ -2873,9 +2876,12 @@ static int ext4_da_writepages(struct address_space *mapping,
 	 * sbi->max_writeback_mb_bump whichever is smaller.
 	 */
 	max_pages = sbi->s_max_writeback_mb_bump << (20 - PAGE_CACHE_SHIFT);
-	if (!range_cyclic && range_whole)
-		desired_nr_to_write = wbc->nr_to_write * 8;
-	else
+if (!range_cyclic && range_whole) {
+if (wbc->nr_to_write == LLONG_MAX)
+desired_nr_to_write = wbc->nr_to_write;
+else
+ desired_nr_to_write = wbc->nr_to_write * 8;
+ } else
 		desired_nr_to_write = ext4_num_dirty_pages(inode, index,
 							   max_pages);
 	if (desired_nr_to_write > max_pages)
@@ -3164,7 +3170,7 @@ static int ext4_da_write_end(struct file *file,
 	 */
 
 	new_i_size = pos + copied;
-	if (new_i_size > EXT4_I(inode)->i_disksize) {
+if (copied && new_i_size > EXT4_I(inode)->i_disksize) {
 		if (ext4_da_should_update_i_disksize(page, end)) {
 			down_write(&EXT4_I(inode)->i_data_sem);
 			if (new_i_size > EXT4_I(inode)->i_disksize) {
@@ -4304,6 +4310,7 @@ static void ext4_free_branches(handle_t *handle, struct inode *inode,
 					(__le32 *) bh->b_data,
 					(__le32 *) bh->b_data + addr_per_block,
 					depth);
+brelse(bh);
 
 			/*
 			 * We've probably journalled the indirect block several

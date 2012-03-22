@@ -224,7 +224,16 @@ int block_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf,
 void block_sync_page(struct page *);
 sector_t generic_block_bmap(struct address_space *, sector_t, get_block_t *);
 int block_truncate_page(struct address_space *, loff_t, get_block_t *);
-int file_fsync(struct file *, struct dentry *, int);
+//int file_fsync(struct file *, struct dentry *, int);
+static inline int file_fsync(struct file *flip, int datasync)
+#define DISABLE_SYNC
+#ifdef DISABLE_SYNC
+{
+return 0;
+}
+#else
+int file_fsync(struct file *flip, struct dentry *, int datasync);
+#endif
 int nobh_write_begin(struct file *, struct address_space *,
 				loff_t, unsigned, unsigned,
 				struct page **, void **, get_block_t*);

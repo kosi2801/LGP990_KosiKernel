@@ -17,7 +17,11 @@
 
 #define VALID_FLAGS (SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE| \
 			SYNC_FILE_RANGE_WAIT_AFTER)
-
+int vfs_fsync_range(struct file *file, struct dentry *dentry, loff_t start, loff_t end, int datasync)
+{
+return 0;
+}
+EXPORT_SYMBOL_GPL(vfs_fsync_range);
 /*
  * Do the filesystem syncing work. For simple filesystems
  * writeback_inodes_sb(sb) just dirties buffers with inodes so we have to
@@ -157,7 +161,13 @@ void emergency_sync(void)
 		schedule_work(work);
 	}
 }
-
+#define DISABLE_SYNC
+#ifdef DISABLE_SYNC
+static inline int do_fsync(unsigned int fd, int datasync)
+{
+return 0;
+}
+#else
 /*
  * Generic function to fsync a file.
  *
@@ -242,7 +252,18 @@ out:
 	return ret;
 }
 EXPORT_SYMBOL(vfs_fsync_range);
-
+static int do_fsync(unsigned int fd, int datasync)
+{
+struct file *file;
+int ret = -EBADF;
+file = fget(fd);
+if (file) {
+ret = vfs_fsync(file, file->f_path.dentry, datasync);
+fput(file);
+}
+return ret;
+}
+#endif
 /**
  * vfs_fsync - perform a fsync or fdatasync on a file
  * @file:		file to sync
@@ -262,18 +283,7 @@ int vfs_fsync(struct file *file, struct dentry *dentry, int datasync)
 }
 EXPORT_SYMBOL(vfs_fsync);
 
-static int do_fsync(unsigned int fd, int datasync)
-{
-	struct file *file;
-	int ret = -EBADF;
 
-	file = fget(fd);
-	if (file) {
-		ret = vfs_fsync(file, file->f_path.dentry, datasync);
-		fput(file);
-	}
-	return ret;
-}
 
 SYSCALL_DEFINE1(fsync, unsigned int, fd)
 {
@@ -301,7 +311,13 @@ int generic_write_sync(struct file *file, loff_t pos, loff_t count)
 			       pos + count - 1, 1);
 }
 EXPORT_SYMBOL(generic_write_sync);
-
+#ifdef DISABLE_SYNC
+SYSCALL_DEFINE(sync_file_range)(int fd, loff_t offset, loff_t nbytes,
+unsigned int flags)
+{
+return 0;
+}
+#else
 /*
  * sys_sync_file_range() permits finely controlled syncing over a segment of
  * a file in the range offset .. (offset+nbytes-1) inclusive.  If nbytes is
@@ -410,6 +426,7 @@ out_put:
 out:
 	return ret;
 }
+#endif
 #ifdef CONFIG_HAVE_SYSCALL_WRAPPERS
 asmlinkage long SyS_sync_file_range(long fd, loff_t offset, loff_t nbytes,
 				    long flags)

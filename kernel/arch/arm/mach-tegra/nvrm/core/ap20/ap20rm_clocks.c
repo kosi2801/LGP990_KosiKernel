@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#include <linux/spica.h>
 #include "nvcommon.h"
 #include "nvassert.h"
 #include "nvrm_clocks.h"
@@ -44,6 +44,82 @@
 #include "ap15/ap15rm_private.h"
 #include "ap20rm_clocks.h"
 #include "ap20/arfuse.h"
+#define CPU_PROCFS_NAME   "maxcpu1off"
+#define CPU1OFF_PROCFS_SIZE     8
+
+static struct proc_dir_entry *CPU_Proc_File;
+static char procfs_buffer_cpu[CPU1OFF_PROCFS_SIZE];
+static unsigned long procfs_buffer_size_cpu = 0;
+
+int cpu_procfile_read(char *buffer, char **buffer_location, off_t offset, int buffer_length, int *eof, void *data) { 
+int ret;
+printk(KERN_INFO "cpu_procfile_read (/proc/spica/%s) called\n", CPU_PROCFS_NAME);
+if (offset > 0) {
+ret  = 0;
+} else {
+memcpy(buffer, procfs_buffer_cpu, procfs_buffer_size_cpu);
+ret = procfs_buffer_size_cpu;
+
+}
+return ret;
+}
+
+int cpu_procfile_write(struct file *file, const char *buffer, unsigned long count, void *data) {
+int temp1;
+temp1=0;
+if ( sscanf(buffer,"%d",&temp1) < 1 ) return procfs_buffer_size_cpu;
+if ( temp1 < 216000 || temp1 > 1100000 ) return procfs_buffer_size_cpu;
+
+procfs_buffer_size_cpu = count;
+	if (procfs_buffer_size_cpu > CPU1OFF_PROCFS_SIZE ) {
+		procfs_buffer_size_cpu = CPU1OFF_PROCFS_SIZE;
+	}
+if ( copy_from_user(procfs_buffer_cpu, buffer, procfs_buffer_size_cpu) ) {
+printk(KERN_INFO "buffer_size error\n");
+return -EFAULT;
+}
+sscanf(procfs_buffer_cpu,"%u",&NVRM_CPU1_OFF_MAX_KHZ);
+//if ( NVRM_CPU1_ON_MIN_KHZ < 216000 || NVRM_CPU1_ON_MIN_KHZ > 1100000 ) {
+return procfs_buffer_size_cpu;
+}
+
+static int __init cpu_cpu_procsfs(void)
+{
+CPU_Proc_File = spica_add(CPU_PROCFS_NAME);
+//spica_dir = proc_mkdir("spica", NULL); 
+
+//ON_Proc_File = create_proc_entry(PROCFS_NAME, 0755, spica_dir);
+if (CPU_Proc_File == NULL) {
+spica_remove(CPU_PROCFS_NAME);
+printk(KERN_ALERT "Error: Could not initialize /proc/spica/%s\n", CPU_PROCFS_NAME);
+return -ENOMEM;
+} else {
+CPU_Proc_File->read_proc  = cpu_procfile_read;
+CPU_Proc_File->write_proc = cpu_procfile_write;
+//ON_Proc_File->owner     = THIS_MODULE;
+CPU_Proc_File->mode     = S_IFREG | S_IRUGO;
+CPU_Proc_File->uid     = 0;
+CPU_Proc_File->gid     = 0;
+CPU_Proc_File->size     = 37;
+sprintf(procfs_buffer_cpu,"%d",NVRM_CPU1_OFF_MAX_KHZ);
+procfs_buffer_size_cpu=strlen(procfs_buffer_cpu);
+printk(KERN_INFO "/proc/spica/%s created\n", CPU_PROCFS_NAME);
+}
+return 0;
+}
+module_init(cpu_cpu_procsfs);
+
+
+static void __exit cpu_cleanup_on_procsfs(void) {
+//printk(KERN_INFO "/proc/spica/%s removed\n", PROCFS_NAME);
+spica_remove(CPU_PROCFS_NAME);
+//remove_proc_entry(PROCFS_NAME, NULL);
+//remove_proc_entry(CPU_PROCFS_NAME, NULL);
+printk(KERN_INFO "/proc/spica/%s removed\n", CPU_PROCFS_NAME);
+}
+module_exit(cpu_cleanup_on_procsfs);
+
+
 
 
 // This list requires pre-sorted info in bond-out registers order and bond-out

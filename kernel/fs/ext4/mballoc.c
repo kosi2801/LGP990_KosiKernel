@@ -2402,6 +2402,7 @@ int ext4_mb_init(struct super_block *sb, int needs_recovery)
 	if (ret != 0) {
 		kfree(sbi->s_mb_offsets);
 		kfree(sbi->s_mb_maxs);
+ext4_mb_release(sb);
 		return ret;
 	}
 
@@ -2511,7 +2512,8 @@ int ext4_mb_release(struct super_block *sb)
 				atomic_read(&sbi->s_mb_discarded));
 	}
 
-	free_percpu(sbi->s_locality_groups);
+if (sbi->s_locality_groups)
+free_percpu(sbi->s_locality_groups);
 	if (sbi->s_proc)
 		remove_proc_entry("mb_groups", sbi->s_proc);
 
