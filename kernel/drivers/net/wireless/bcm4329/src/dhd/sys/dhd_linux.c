@@ -43,6 +43,7 @@
 #include <linux/ethtool.h>
 #include <linux/fcntl.h>
 #include <linux/fs.h>
+#include <linux/inetdevice.h>
 
 #include <asm/uaccess.h>
 #include <asm/unaligned.h>
@@ -195,6 +196,12 @@ void wifi_del_dev(void)
 }
 #endif /* defined(CUSTOMER_HW2) && defined(CONFIG_WIFI_CONTROL_FUNC) */
 
+static int dhd_device_event(struct notifier_block *this, unsigned long event,
+                               void *ptr);
+
+static struct notifier_block dhd_notifier = {
+       .notifier_call = dhd_device_event
+};
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && defined(CONFIG_PM_SLEEP)
 #include <linux/suspend.h>
@@ -317,7 +324,7 @@ extern int dhdcdc_set_ioctl(dhd_pub_t *dhd, int ifidx, uint cmd, void *buf, uint
 extern int	 wl_control_wl_start(struct net_device *dev);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 struct semaphore dhd_registration_sem;
-#define DHD_REGISTRATION_TIMEOUT  12000  /* msec : allowed time to finished dhd registration */
+#define DHD_REGISTRATION_TIMEOUT  24000  /* msec : allowed time to finished dhd registration */
 #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) */
 /* load firmware and/or nvram values from the filesystem */
 module_param_string(firmware_path, firmware_path, MOD_PARAM_PATHLEN, 0);
@@ -2057,6 +2064,9 @@ dhd_open(struct net_device *net)
 	ifidx = dhd_net2idx(dhd, net);
 
 	DHD_TRACE(("%s: ifidx %d\n", __FUNCTION__, ifidx));
+
+	if(ifidx < 0)
+		return -1;
 /*
 	if ((dhd->iflist[ifidx]) && (dhd->iflist[ifidx]->state == WLC_E_IF_DEL)) {
 		DHD_ERROR(("%s: Error: called when IF already deleted\n", __FUNCTION__));
@@ -2354,6 +2364,8 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 	register_early_suspend(&dhd->early_suspend);
 #endif
 
+	register_inetaddr_notifier(&dhd_notifier);
+
 	return &dhd->pub;
 
 fail:
@@ -2521,6 +2533,49 @@ static struct net_device_ops dhd_ops_virt = {
 	.ndo_set_multicast_list = dhd_set_multicast_list
 };
 #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 31)) */
+
+static int dhd_device_event(struct notifier_block *this, unsigned long event,
+                               void *ptr)
+{
+       struct in_ifaddr *ifa = (struct in_ifaddr *)ptr;
+       dhd_info_t *dhd;
+       dhd_pub_t *dhd_pub;
+
+       if (!ifa)
+               return NOTIFY_DONE;
+
+       dhd = *(dhd_info_t **)netdev_priv(ifa->ifa_dev->dev);
+       dhd_pub = &dhd->pub;
+
+#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 31))
+       if (ifa->ifa_dev->dev->netdev_ops == &dhd_ops_pri) {
+#else
+       if (ifa->ifa_dev->dev->open == &dhd_open) {
+#endif
+               switch (event) {
+               case NETDEV_UP:
+                       DHD_TRACE(("%s: [%s] Up IP: 0x%x\n",
+                           __FUNCTION__, ifa->ifa_label, ifa->ifa_address));
+
+                       dhd_arp_cleanup(dhd_pub);
+                       break;
+
+               case NETDEV_DOWN:
+                       DHD_TRACE(("%s: [%s] Down IP: 0x%x\n",
+                           __FUNCTION__, ifa->ifa_label, ifa->ifa_address));
+
+                       dhd_arp_cleanup(dhd_pub);
+                       break;
+
+               default:
+                       DHD_TRACE(("%s: [%s] Event: %lu\n",
+                           __FUNCTION__, ifa->ifa_label, event));
+                       break;
+               }
+       }
+       return NOTIFY_DONE;
+}
+
 int
 dhd_net_attach(dhd_pub_t *dhdp, int ifidx)
 {
@@ -2663,6 +2718,8 @@ dhd_detach(dhd_pub_t *dhdp)
 		if (dhd) {
 			dhd_if_t *ifp;
 			int i;
+
+			unregister_inetaddr_notifier(&dhd_notifier);
 
 #if defined(CONFIG_HAS_EARLYSUSPEND)
 		if (dhd->early_suspend.suspend)
