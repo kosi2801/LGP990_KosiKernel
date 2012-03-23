@@ -6,9 +6,9 @@ sysctl -w vm.swappiness=30;
 
 insmod /system/lib/modules/lzo_compress.ko
 insmod /system/lib/modules/lzo_decompress.ko
-insmod /system/lib/modules/ramzswap.ko num_devices=4;
+insmod /system/lib/modules/ramzswap.ko num_devices=2 disksize_kb=190824;
 
-for i in 0 1 2 3;
+for i in 0 1;
 do \
 rzscontrol /dev/block/ramzswap$i --reset;
 rzscontrol /dev/block/ramzswap$i --init;
