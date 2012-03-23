@@ -1,1 +1,1 @@
-#define UTS_RELEASE "2.6.32.9-Kosi004-HP_RC12SR1R-powered-ge46e825-dirty"
+#define UTS_RELEASE "2.6.32.9-Kosi004-1332531825-g3367564-dirty"
