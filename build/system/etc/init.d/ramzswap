@@ -15,4 +15,24 @@ rzscontrol /dev/block/ramzswap$i --init;
 busybox swapon -p 1 /dev/block/ramzswap$i;
 done;
 
+
+RESET_ZSWAP() 
+{
+  log -p i -t init.d/ramzswap resetting swap and swap device /dev/block/ramzswap$1
+  busybox swapoff /dev/block/ramzswap$1;
+  rzscontrol /dev/block/ramzswap$1 --reset;
+  rzscontrol /dev/block/ramzswap$1 --init;
+  busybox swapon -p 1 /dev/block/ramzswap$1;
+}
+
+# clean up one swap device every 5h to free unused pages in ramzswap
+(while [ 1 ];
+	do
+          sleep 18000
+	  RESET_ZSWAP 0
+          sleep 18000
+	  RESET_ZSWAP 1
+	  ;
+done &); 
+
 log -p i -t init.d/ramzswap end
