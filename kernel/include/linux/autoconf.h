@@ -1,7 +1,7 @@
 /*
  * Automatically generated C config: don't edit
- * Linux kernel version: 2.6.32.9-Kosi004-1332531825
- * Fri Mar 23 12:44:04 2012
+ * Linux kernel version: 2.6.32.9-Kosi004-HP_RC12SR1R-powered
+ * Fri Mar 23 13:03:44 2012
  */
 #define AUTOCONF_INCLUDED
 #define CONFIG_ANDROID 1
