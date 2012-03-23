@@ -38,6 +38,8 @@ Based on Spica SR3R
 005
 - apply Spica fix for CPU memleak 
 -- https://github.com/spica234/HP-Krnl-2.6.32.9/commit/6dc04064002fb36ffc9dea87782e0dd178978542
+- enhance ramzswap initscript to reset one swap every 5h to clean up unused pages
+
 
 TODO:
 
