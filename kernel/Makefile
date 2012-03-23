@@ -4,7 +4,6 @@ SUBLEVEL = 32
 KOSI_MAJOR_VERSION ?= 004
 KOSI_BUILD_TIMESTAMP ?= HP_RC12SR1R-powered
 EXTRAVERSION = .9-Kosi$(KOSI_MAJOR_VERSION)-$(KOSI_BUILD_TIMESTAMP)
-#EXTRAVERSION ?= .9-Kosi004-HP_RC12SR1R-powered
 NAME = Man-Eating Seals of Antiquity
 
 # *DOCUMENTATION*
@@ -225,7 +224,7 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 HOSTCC       = gcc
 HOSTCXX      = g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer
-HOSTCXXFLAGS = -Ofast
+HOSTCXXFLAGS = -O2
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
@@ -333,8 +332,8 @@ AFLAGS_MODULE   = $(MODFLAGS)
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
 #CFLAGS_KERNEL	= -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -fsingle-precision-constant -mfpu=vfpv3-d16 -ftree-vectorize -ffast-math
 #AFLAGS_KERNEL	= -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -fsingle-precision-constant -mfpu=vfpv3-d16 -ftree-vectorize -ffast-math
-CFLAGS_KERNEL	= -Ofast -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
-AFLAGS_KERNEL	= -Ofast -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
+CFLAGS_KERNEL	= -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
+AFLAGS_KERNEL	= -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 # 20100705, sunghoon.kim@lge.com,[LGE_START]
