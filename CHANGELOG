@@ -29,6 +29,12 @@ Based on Spica SR3R
 -- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=9edc2cc0fbfc94fddeaaf20a47e1b4c8e7d424f4
 - https://github.com/SetiroN/lge-kernel-star/commit/e1eba9859f1ae31aa4818758c10f6d78bf17cfda
 
+004
+- changed compile params to -Ofast
+- reorganize folder structure, build "build" dir from spica kernel zip template
+- add "kosi_defconfig" as custom kernel configuration
+- create buildscript for automatic building, versioning and zipping of kernel
+
 TODO:
 - http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=60463e0ed16e0af62120db55b4c2f4c8b64acf64
 - http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=04dd4dc82b0960ff95c3adc58c07da3ce699a67f
