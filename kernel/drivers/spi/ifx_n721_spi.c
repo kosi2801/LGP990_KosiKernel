@@ -102,6 +102,7 @@ void dump_atcmd(char *data, int len)
 #elif defined (CONFIG_MODEM_IFX)
 #include <mach/lprintk.h> //20100426, es.lee@lge.com, Change printk to lprintk
 #define SPI_DEBUG_PRINT(format, args...)  lprintk(D_SPI,format , ## args)
+#if defined (CONFIG_LPRINTK_SPI)
 void dump_atcmd(char *data, int len) 
 {
 	int j ;
@@ -121,6 +122,9 @@ void dump_atcmd(char *data, int len)
 	}
 	printk("\n");
 }
+#else
+#define dump_atcmd(data, len) ((void)0)  /* do { } while(0) */
+#endif
 #endif
 #endif
 
@@ -656,7 +660,7 @@ static int ifx_spi_resume(struct platform_device *dev)
 
         printk("[IFX_SRDY_SPI_RESUME] %s() wakeup pad : 0x%lx \n", __func__, reg);
 
-#ifndef CONFIG_SPI_DEBUG
+#ifdef CONFIG_SPI_DEBUG
 	 lge_debug[D_SPI].enable = 1;
 #endif
 	 gspi_data->wake_lock_flag = 1;
@@ -968,7 +972,7 @@ ifx_spi_send_and_receive_data(struct ifx_spi_data *spi_data)
 	}*/
 #if defined (CONFIG_MODEM_IFX)
 #ifdef WAKE_LOCK_RESUME
-#ifndef CONFIG_SPI_DEBUG
+#ifdef CONFIG_SPI_DEBUG
 		if(spi_data->wake_lock_flag)
 		{
 			spi_data->wake_lock_flag = 0;
