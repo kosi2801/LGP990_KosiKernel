@@ -78,6 +78,15 @@ GRTAGS
 GSYMS
 GTAGS
 
+# version/compilation dependend files
+.version
+Module.symvers
+include/config/auto.conf
+include/config/auto.conf.cmd
+include/config/kernel.release
+include/linux/autoconf.h
+include/linux/utsrelease.h
+
 *.orig
 *~
 \#*#
