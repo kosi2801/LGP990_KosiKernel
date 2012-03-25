@@ -46,4 +46,9 @@ Based on Spica SR3R
 
 TODO:
 - fix ramzswap script/sizes
+- integrate snappy compression instead of LZO into ramzswap
+- update bfq scheduler
+
+
+
 
