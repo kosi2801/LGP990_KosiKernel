@@ -1,7 +1,7 @@
 /*
  * Automatically generated C config: don't edit
  * Linux kernel version: 2.6.32.9-Kosi005-HP_RC12SR1R-powered
- * Sat Mar 24 04:13:07 2012
+ * Wed Mar 28 13:01:11 2012
  */
 #define AUTOCONF_INCLUDED
 #define CONFIG_ANDROID 1
@@ -172,7 +172,6 @@
 #define CONFIG_MACH_TEGRA_GENERIC 1
 #define CONFIG_SERIAL_CORE 1
 #define CONFIG_CRYPTO_AUTHENC 1
-#define CONFIG_LZO_DECOMPRESS_MODULE 1
 #define CONFIG_TEGRA_AES_USER 1
 #define CONFIG_UID16 1
 #define CONFIG_LOCK_KERNEL 1
@@ -465,7 +464,6 @@
 #define CONFIG_CRYPTO_PCOMP 1
 #define CONFIG_ARM_THUMB 1
 #define CONFIG_INOTIFY_USER 1
-#define CONFIG_LZO_COMPRESS_MODULE 1
 #define CONFIG_CRYPTO_CRC32C 1
 #define CONFIG_MMC_BLOCK_BOUNCE 1
 #define CONFIG_CFS_BOOST 1

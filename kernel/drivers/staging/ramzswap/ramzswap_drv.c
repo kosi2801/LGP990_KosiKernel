@@ -817,7 +817,7 @@ static int ramzswap_write(struct ramzswap *rzs, struct bio *bio)
 	size_t clen;
 	struct zobj_header *zheader;
 	struct page *page, *page_store;
-	unsigned char *user_mem, *cmem, *src;
+	unsigned char *user_mem, *cmem, *src, *end;
 
 	stat64_inc(rzs, &rzs->stats.num_writes);
 
@@ -861,8 +861,9 @@ static int ramzswap_write(struct ramzswap *rzs, struct bio *bio)
 /*	ret = lzo1x_1_compress(user_mem, PAGE_SIZE, src, &clen,
 				rzs->compress_workmem);
 */
-	csnappy_compress(user_mem, PAGE_SIZE, src, &clen,
+	end = csnappy_compress_fragment(user_mem, PAGE_SIZE, src, 
 				rzs->compress_workmem, CSNAPPY_WORKMEM_BYTES_POWER_OF_TWO);
+	clen = end - src;
 
 	kunmap_atomic(user_mem, KM_USER0);
 

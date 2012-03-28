@@ -6,11 +6,9 @@ setprop windowsmgr.max_events_per_sec 120;
 setprop persist.sys.purgeable_assets 1;
 setprop persist.sys.use_dithering 0;
 setprop ro.lge.proximity.delay 0;
-sysctl -w vm.swappiness=10;
+sysctl -w vm.swappiness=60;
 
-insmod /system/lib/modules/lzo_compress.ko
-insmod /system/lib/modules/lzo_decompress.ko
-insmod /system/lib/modules/ramzswap.ko num_devices=2 disksize_kb=191158;
+busybox insmod /system/lib/modules/ramzswap.ko num_devices=2 
 
 for i in 0 1;
 do \
@@ -18,3 +16,4 @@ rzscontrol /dev/block/ramzswap$i --reset;
 rzscontrol /dev/block/ramzswap$i --init;
 busybox swapon -p $i /dev/block/ramzswap$i;
 done;
+
