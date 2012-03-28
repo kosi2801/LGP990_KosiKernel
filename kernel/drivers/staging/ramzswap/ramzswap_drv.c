@@ -23,7 +23,8 @@
 #include <linux/device.h>
 #include <linux/genhd.h>
 #include <linux/highmem.h>
-#include <linux/lzo.h>
+//#include <linux/lzo.h>
+#include "csnappy.h"
 #include <linux/string.h>
 #include <linux/swap.h>
 #include <linux/swapops.h>
@@ -777,7 +778,12 @@ static int ramzswap_read(struct ramzswap *rzs, struct bio *bio)
 	cmem = kmap_atomic(rzs->table[index].page, KM_USER1) +
 			rzs->table[index].offset;
 
-	ret = lzo1x_decompress_safe(
+/*	ret = lzo1x_decompress_safe(
+		cmem + sizeof(*zheader),
+		xv_get_object_size(cmem) - sizeof(*zheader),
+		user_mem, &clen);
+*/
+	ret = csnappy_decompress_noheader(
 		cmem + sizeof(*zheader),
 		xv_get_object_size(cmem) - sizeof(*zheader),
 		user_mem, &clen);
@@ -786,7 +792,7 @@ static int ramzswap_read(struct ramzswap *rzs, struct bio *bio)
 	kunmap_atomic(cmem, KM_USER1);
 
 	/* should NEVER happen */
-	if (unlikely(ret != LZO_E_OK)) {
+	if (unlikely(ret != CSNAPPY_E_OK)) {
 		pr_err("Decompression failed! err=%d, page=%u\n",
 			ret, index);
 		stat64_inc(rzs, &rzs->stats.failed_reads);
@@ -852,17 +858,21 @@ static int ramzswap_write(struct ramzswap *rzs, struct bio *bio)
 		goto out;
 	}
 
-	ret = lzo1x_1_compress(user_mem, PAGE_SIZE, src, &clen,
+/*	ret = lzo1x_1_compress(user_mem, PAGE_SIZE, src, &clen,
 				rzs->compress_workmem);
+*/
+	csnappy_compress(user_mem, PAGE_SIZE, src, &clen,
+				rzs->compress_workmem, CSNAPPY_WORKMEM_BYTES_POWER_OF_TWO);
 
 	kunmap_atomic(user_mem, KM_USER0);
 
-	if (unlikely(ret != LZO_E_OK)) {
+/*	if (unlikely(ret != LZO_E_OK)) {
 		mutex_unlock(&rzs->lock);
 		pr_err("Compression failed! err=%d\n", ret);
 		stat64_inc(rzs, &rzs->stats.failed_writes);
 		goto out;
 	}
+*/
 
 	/*
 	 * Page is incompressible. Forward it to backing swap
@@ -1133,7 +1143,10 @@ static int ramzswap_ioctl_init_device(struct ramzswap *rzs)
 	else
 		ramzswap_set_disksize(rzs, totalram_pages << PAGE_SHIFT);
 
-	rzs->compress_workmem = kzalloc(LZO1X_MEM_COMPRESS, GFP_KERNEL);
+/*	rzs->compress_workmem = kzalloc(LZO1X_MEM_COMPRESS, GFP_KERNEL);
+*/
+	rzs->compress_workmem = kzalloc(CSNAPPY_WORKMEM_BYTES, GFP_KERNEL);
+
 	if (!rzs->compress_workmem) {
 		pr_err("Error allocating compressor working memory!\n");
 		ret = -ENOMEM;

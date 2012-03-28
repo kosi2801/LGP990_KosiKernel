@@ -1,8 +1,6 @@
 config RAMZSWAP
 	tristate "Compressed in-memory swap device (ramzswap)"
 	depends on SWAP
-	select LZO_COMPRESS
-	select LZO_DECOMPRESS
 	default n
 	help
 	  Creates virtual block devices which can (only) be used as swap
@@ -11,6 +9,7 @@ config RAMZSWAP
 
 	  See ramzswap.txt for more information.
 	  Project home: http://compcache.googlecode.com/
+	  Modded by kosi2801 to use buildin Swappy compression instead of LZO.
 
 config RAMZSWAP_STATS
 	bool "Enable ramzswap stats"

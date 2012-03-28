@@ -1,3 +1,5 @@
+ - modded by kosi2801 to use builtin snappy compression
+
 version 0.6.2	(25/1/2010)
  - Sync-up with mainline version which includes changes below.
  - Lots and lots of cleanups.
