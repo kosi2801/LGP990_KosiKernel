@@ -9,7 +9,7 @@ config RAMZSWAP
 
 	  See ramzswap.txt for more information.
 	  Project home: http://compcache.googlecode.com/
-	  Modded by kosi2801 to use buildin Swappy compression instead of LZO.
+	  Modded by kosi2801 to use buildin Snappy compression instead of LZO.
 
 config RAMZSWAP_STATS
 	bool "Enable ramzswap stats"
@@ -18,3 +18,14 @@ config RAMZSWAP_STATS
 	help
 	  Enable statistics collection for ramzswap. This adds only a minimal
 	  overhead. In unsure, say Y.
+
+config RAMZSWAP_OLD_COMPRESSION
+	bool "Use old LZO compression algorithm instead of Snappy for ramzswap"
+	depends on RAMZSWAP
+        select LZO_COMPRESS
+        select LZO_DECOMPRESS
+	default y
+	help
+	  This replaces the default Snappy compression of the ramzswap device 
+	  with the slower but more efficient LZO algorithm. 
+	  In unsure, say Y.
