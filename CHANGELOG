@@ -44,11 +44,9 @@ Based on Spica SR3R
 -- https://github.com/vadonka/lge-kernel-kang/blob/4ea935437de25a3de2ac3079cd00e766cb2f7bc2/drivers/spi/ifx_n721_spi.c -- integrate vadonka version to fix link error
 - integrate snappy compression instead of LZO into ramzswap, make selectable via kernel config
 - tweak initscripts for ramzswap
+- update snappy to latest version from https://github.com/zeevt/csnappy/tree/524de8890802a9605a6f719f8bf819fd2c093d66
 
 TODO:
-- speed up snappy
--- https://github.com/andikleen/snappy-c/commit/9fd3993baa8994002fd3a7829c6e345586949df8
--- https://github.com/andikleen/snappy-c/commit/1c89e68c28b88b590d35ec715befc2bb4f7814b4
 - fix ramzswap script/sizes
 - update bfq scheduler
 
