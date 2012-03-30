@@ -1,5 +1,7 @@
 #!/system/bin/sh
 
+log -p i -t init.d/systweaks start
+
 setprop ro.ril.disable.power.collapse 0;
 setprop pm.sleep_mode 1;
 setprop windowsmgr.max_events_per_sec 120;
@@ -8,7 +10,7 @@ setprop persist.sys.use_dithering 0;
 setprop ro.lge.proximity.delay 0;
 sysctl -w vm.swappiness=60;
 
-busybox insmod /system/lib/modules/ramzswap.ko num_devices=2 
+busybox insmod /system/lib/modules/ramzswap.ko num_devices=2 ;
 
 for i in 0 1;
 do \
@@ -16,4 +18,6 @@ rzscontrol /dev/block/ramzswap$i --reset;
 rzscontrol /dev/block/ramzswap$i --init;
 busybox swapon -p $i /dev/block/ramzswap$i;
 done;
+
+log -p i -t init.d/systweaks end
 
