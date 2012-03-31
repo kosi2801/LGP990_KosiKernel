@@ -54,13 +54,13 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/commit/d419d54be93304ba2390c86f9975a9a66c6c0fac
 -- switch more Makefiles to hardfloat compiling
 --- https://github.com/vadonka/lge-kernel-kang/commit/91768d0e7324d87d49fc58394170e4bb1fa03ca9
+-- allow broadcom deepsleep
+--- https://github.com/vadonka/lge-kernel-kang/commit/201eddf4fc60ffde64c571eb26987ba51eebcf4d
+
 
 TODO:
 - cherrypicking from vadonka
 
--- https://github.com/vadonka/lge-kernel-kang/commit/e4bee2bd430caa1727a4ed093e7b5cdbbb2391c4
--- https://github.com/vadonka/lge-kernel-kang/commit/dc3d3b5b961de3121260558145ac383377c3c242
--- https://github.com/vadonka/lge-kernel-kang/commit/201eddf4fc60ffde64c571eb26987ba51eebcf4d
 -- https://github.com/vadonka/lge-kernel-kang/commit/6f334518cf4f42f45dd243ac29c0d7d1ed0a3da0
 -- https://github.com/vadonka/lge-kernel-kang/commit/111e1be10f78da251f867e2dbb2ccc55c4d5d6e8
 -- https://github.com/vadonka/lge-kernel-kang/commit/8b4c59e15f646f24fc4978474acd52e1aae63953
