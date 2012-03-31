@@ -47,9 +47,13 @@ Based on Spica SR3R
 - tweak initscripts for ramzswap
 - updated snappy compression in ramzswap to latest version from https://github.com/zeevt/csnappy/tree/524de8890802a9605a6f719f8bf819fd2c093d66
 
+006
+-
+
 TODO:
 - update bfq scheduler
 - minimize compiled size of kernel and modules
+- update BCM4329 to latest version findable
 
 
 
