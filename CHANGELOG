@@ -27,7 +27,8 @@ Based on Spica SR3R
 -- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=cf95ed1acdf1b56de9d1b26e1077ce367cbd65dc
 -- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=c59f49309ecb2beb973cd89c7547496967e31134
 -- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=commit;h=9edc2cc0fbfc94fddeaaf20a47e1b4c8e7d424f4
-- https://github.com/SetiroN/lge-kernel-star/commit/e1eba9859f1ae31aa4818758c10f6d78bf17cfda
+- enable CPU based handling of unaligned access instead of software handling
+-- https://github.com/SetiroN/lge-kernel-star/commit/e1eba9859f1ae31aa4818758c10f6d78bf17cfda
 
 004
 - reorganize folder structure, build "build" dir from spica kernel zip template
@@ -39,16 +40,16 @@ Based on Spica SR3R
 - apply Spica fix for CPU memleak 
 -- https://github.com/spica234/HP-Krnl-2.6.32.9/commit/6dc04064002fb36ffc9dea87782e0dd178978542
 - enhance ramzswap initscript to reset one swap every 5h to clean up unused pages
-- change kernel config, remove CONFIG_DEBUG_FS
+- change kernel config, finally remove CONFIG_DEBUG_FS
 -- https://github.com/vadonka/lge-kernel-kang/commit/8b0cde6be1b32f726a5b2edf426f7147d5756dfd - reduce pinmux logging
 -- https://github.com/vadonka/lge-kernel-kang/blob/4ea935437de25a3de2ac3079cd00e766cb2f7bc2/drivers/spi/ifx_n721_spi.c -- integrate vadonka version to fix link error
 - integrate snappy compression instead of LZO into ramzswap, make selectable via kernel config
 - tweak initscripts for ramzswap
-- update snappy to latest version from https://github.com/zeevt/csnappy/tree/524de8890802a9605a6f719f8bf819fd2c093d66
+- updated snappy compression in ramzswap to latest version from https://github.com/zeevt/csnappy/tree/524de8890802a9605a6f719f8bf819fd2c093d66
 
 TODO:
-- fix ramzswap script/sizes
 - update bfq scheduler
+- minimize compiled size of kernel and modules
 
 
 
