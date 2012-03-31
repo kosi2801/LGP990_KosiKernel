@@ -35,6 +35,7 @@ kernel.release
 autoconf.h
 utsrelease.h
 gedit.sh
+
 #
 # Top-level generic files
 #
@@ -60,6 +61,7 @@ include/linux/utsrelease.h
 include/linux/bounds.h
 arch/arm/mach-msm/smd_rpc_sym.c
 include/generated
+include/asm-arm
 
 # stgit generated dirs
 patches-*
@@ -79,6 +81,7 @@ GSYMS
 GTAGS
 
 # version/compilation dependend files
+.config 
 .version
 Module.symvers
 include/config/auto.conf
