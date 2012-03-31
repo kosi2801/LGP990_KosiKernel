@@ -101,19 +101,19 @@ AFLAGS_THUMB2	:=$(CFLAGS_THUMB2) -Wa$(comma)-mthumb
 endif
 
 # Need -Uarm for gcc < 3.x
-KBUILD_CFLAGS  +=$(CFLAGS_ABI) $(CFLAGS_THUMB2) $(arch-y) $(tune-y) $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,)) -mhard-float -Uarm
+KBUILD_CFLAGS  +=$(CFLAGS_ABI) $(CFLAGS_THUMB2) $(arch-y) $(tune-y) $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,)) -msoft-float -Uarm
 KBUILD_CFLAGS  += $(cc-option,-mfpu=vfpv3-d16)
-ifeq ($(call cc-option-yn,-mfloat-abi=hard),y)
-KBUILD_CFLAGS  += -mfloat-abi=hard
+ifeq ($(call cc-option-yn,-mfloat-abi=soft),y)
+KBUILD_CFLAGS  += -mfloat-abi=soft
 else
-KBUILD_CFLAGS  += -mhard-float
+KBUILD_CFLAGS  += -msoft-float
 endif
-KBUILD_AFLAGS  +=$(CFLAGS_ABI) $(AFLAGS_THUMB2) $(arch-y) $(tune-y) -include asm/unified.h -mhard-float
+KBUILD_AFLAGS  +=$(CFLAGS_ABI) $(AFLAGS_THUMB2) $(arch-y) $(tune-y) -include asm/unified.h -msoft-float
 KBUILD_AFLAGS  += $(as-option,-mfpu=vfpv3-d16)
-ifeq ($(call as-option-yn,-mfloat-abi=hard),y)
-KBUILD_AFLAGS  += -mfloat-abi=hard
+ifeq ($(call as-option-yn,-mfloat-abi=soft),y)
+KBUILD_AFLAGS  += -mfloat-abi=soft
 else
-KBUILD_AFLAGS  += -mhard-float
+KBUILD_AFLAGS  += -msoft-float
 endif
 
 CHECKFLAGS	+= -D__arm__
