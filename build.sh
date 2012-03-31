@@ -4,7 +4,7 @@
 export ARCH=arm
 
 ## kernel version vars
-export KOSI_MAJOR_VERSION=005
+export KOSI_MAJOR_VERSION=006
 #export KOSI_BUILD_TIMESTAMP=$(date +%s)
 
 cd kernel
