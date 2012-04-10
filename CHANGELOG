@@ -85,6 +85,8 @@ TODO:
 
 - minimize compiled size of kernel and modules
 - update BCM4329 to latest version findable
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=blob_plain;f=drivers/net/wireless/bcmdhd/wl_iw.c;hb=6de21231e558a85d766e7d821a6542c5c1803aa8 ?
+-- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git&a=search&h=refs%2Fheads%2Fandroid-tegra-nv-3.1&st=commit&s=bcm ?
 
 
 
