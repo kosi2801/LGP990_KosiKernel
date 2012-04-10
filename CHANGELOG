@@ -59,6 +59,8 @@ Based on Spica SR3R
 -- enhance voice quality
 --- https://github.com/vadonka/lge-kernel-kang/commit/fa4525b9c0321f0c4ebe367fa50553bde183cdf8
 --- https://github.com/vadonka/lge-kernel-kang/commit/cdc7485434be0b33b717e413e524f9fc4e0f8934
+- update bfq scheduler from vadonkas latest source
+-- https://github.com/vadonka/lge-kernel-kang/tree/2a6738ee684432a9e442a189b38075ade4478831/block
 
 TODO:
 - cherrypicking from vadonka
@@ -79,8 +81,6 @@ TODO:
 -- https://github.com/vadonka/lge-kernel-kang/commit/cdc7485434be0b33b717e413e524f9fc4e0f8934
 
 
-- update bfq scheduler
--- https://github.com/vadonka/lge-kernel-kang/commit/2a6738ee684432a9e442a189b38075ade4478831 ?
 - minimize compiled size of kernel and modules
 - update BCM4329 to latest version findable
 
