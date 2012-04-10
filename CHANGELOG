@@ -59,8 +59,11 @@ Based on Spica SR3R
 -- enhance voice quality
 --- https://github.com/vadonka/lge-kernel-kang/commit/fa4525b9c0321f0c4ebe367fa50553bde183cdf8
 --- https://github.com/vadonka/lge-kernel-kang/commit/cdc7485434be0b33b717e413e524f9fc4e0f8934
-- update bfq scheduler from vadonkas latest source
--- https://github.com/vadonka/lge-kernel-kang/tree/2a6738ee684432a9e442a189b38075ade4478831/block
+-- update bfq scheduler from vadonkas latest source
+--- https://github.com/vadonka/lge-kernel-kang/tree/2a6738ee684432a9e442a189b38075ade4478831/block
+-- [PATCH] net: fix sk_forward_alloc corruptions & sock_queue_err_skb() dont mess with sk_forward_alloc
+--- https://github.com/vadonka/lge-kernel-kang/commit/706110f98d4aea5cd66ea93b0763fe4356310622
+
 
 TODO:
 - cherrypicking from vadonka
@@ -76,7 +79,6 @@ TODO:
 -- https://github.com/vadonka/lge-kernel-kang/commit/4e133cc9ec0525a909dd42d0bc55fe4b5f5cc2b7
 -- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
 -- https://github.com/vadonka/lge-kernel-kang/commit/66e8b126ed426b3cc3a883dc0f1153b4f1538e68
--- https://github.com/vadonka/lge-kernel-kang/commit/706110f98d4aea5cd66ea93b0763fe4356310622
 -- https://github.com/vadonka/lge-kernel-kang/commit/fa4525b9c0321f0c4ebe367fa50553bde183cdf8
 -- https://github.com/vadonka/lge-kernel-kang/commit/cdc7485434be0b33b717e413e524f9fc4e0f8934
 
