@@ -67,6 +67,8 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/commit/66e8b126ed426b3cc3a883dc0f1153b4f1538e68
 -- Enable tegra carveout killer by default
 --- https://github.com/vadonka/lge-kernel-kang/commit/111e1be10f78da251f867e2dbb2ccc55c4d5d6e8
+-- arm: tegra: power: fix lp0 resume failure 
+--- https://github.com/vadonka/lge-kernel-kang/commit/4e133cc9ec0525a909dd42d0bc55fe4b5f5cc2b7
 
 
 TODO:
@@ -79,7 +81,6 @@ TODO:
 -- https://github.com/vadonka/lge-kernel-kang/commit/0be94729245b012753b0f143752c22bf51aa49cd
 -- https://github.com/vadonka/lge-kernel-kang/commit/27f8db397bcf20be0dab4096d269e96b9e6c8b7e
 -- https://github.com/vadonka/lge-kernel-kang/commit/fb6df03037761e4d02aa05eec110947c921d9dc5
--- https://github.com/vadonka/lge-kernel-kang/commit/4e133cc9ec0525a909dd42d0bc55fe4b5f5cc2b7
 -- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
 -- https://github.com/vadonka/lge-kernel-kang/commit/fa4525b9c0321f0c4ebe367fa50553bde183cdf8
 -- https://github.com/vadonka/lge-kernel-kang/commit/cdc7485434be0b33b717e413e524f9fc4e0f8934
