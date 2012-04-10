@@ -65,13 +65,14 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/commit/706110f98d4aea5cd66ea93b0763fe4356310622
 -- ARM tegra: gpio: Correct gpio interrupt init sequence
 --- https://github.com/vadonka/lge-kernel-kang/commit/66e8b126ed426b3cc3a883dc0f1153b4f1538e68
+-- Enable tegra carveout killer by default
+--- https://github.com/vadonka/lge-kernel-kang/commit/111e1be10f78da251f867e2dbb2ccc55c4d5d6e8
 
 
 TODO:
 - cherrypicking from vadonka
 
 -- https://github.com/vadonka/lge-kernel-kang/commit/6f334518cf4f42f45dd243ac29c0d7d1ed0a3da0
--- https://github.com/vadonka/lge-kernel-kang/commit/111e1be10f78da251f867e2dbb2ccc55c4d5d6e8
 -- https://github.com/vadonka/lge-kernel-kang/commit/8b4c59e15f646f24fc4978474acd52e1aae63953
 -- https://github.com/vadonka/lge-kernel-kang/commit/d8800bb869ab7f0ca2df165d8e000cdaee2f3765
 -- https://github.com/vadonka/lge-kernel-kang/commit/de29f457c300a4e327bdfab5c3ac6df5b7f679fa
