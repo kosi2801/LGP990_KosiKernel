@@ -56,7 +56,9 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/commit/91768d0e7324d87d49fc58394170e4bb1fa03ca9
 -- allow broadcom deepsleep
 --- https://github.com/vadonka/lge-kernel-kang/commit/201eddf4fc60ffde64c571eb26987ba51eebcf4d
-
+-- enhance voice quality
+--- https://github.com/vadonka/lge-kernel-kang/commit/fa4525b9c0321f0c4ebe367fa50553bde183cdf8
+--- https://github.com/vadonka/lge-kernel-kang/commit/cdc7485434be0b33b717e413e524f9fc4e0f8934
 
 TODO:
 - cherrypicking from vadonka
@@ -66,7 +68,6 @@ TODO:
 -- https://github.com/vadonka/lge-kernel-kang/commit/8b4c59e15f646f24fc4978474acd52e1aae63953
 -- https://github.com/vadonka/lge-kernel-kang/commit/d8800bb869ab7f0ca2df165d8e000cdaee2f3765
 -- https://github.com/vadonka/lge-kernel-kang/commit/de29f457c300a4e327bdfab5c3ac6df5b7f679fa
--- https://github.com/vadonka/lge-kernel-kang/commit/8b4c59e15f646f24fc4978474acd52e1aae63953
 -- https://github.com/vadonka/lge-kernel-kang/commit/0be94729245b012753b0f143752c22bf51aa49cd
 -- https://github.com/vadonka/lge-kernel-kang/commit/27f8db397bcf20be0dab4096d269e96b9e6c8b7e
 -- https://github.com/vadonka/lge-kernel-kang/commit/fb6df03037761e4d02aa05eec110947c921d9dc5
