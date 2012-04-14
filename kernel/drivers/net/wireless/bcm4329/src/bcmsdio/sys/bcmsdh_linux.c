@@ -249,7 +249,7 @@ int bcmsdh_probe(struct device *dev)
 	/* try to attach to the target device */
 	if (!(sdhc->ch = drvinfo.attach((vendevid >> 16),
 	                                 (vendevid & 0xFFFF), 0, 0, 0, 0,
-	                                (void *)regs, NULL, sdh))) {
+	                                (void *)regs, NULL, sdh, dev))) {
 		SDLX_MSG(("%s: device attach failed\n", __FUNCTION__));
 		goto err;
 	}
@@ -345,18 +345,18 @@ static struct pci_driver bcmsdh_pci_driver = {
 #endif
 	suspend:	NULL,
 	resume:		NULL,
-	};
+};
 
 
 extern uint sd_pci_slot;	/* Force detection to a particular PCI */
-							/* slot only . Allows for having multiple */
-							/* WL devices at once in a PC */
-							/* Only one instance of dhd will be */
-							/* usable at a time */
-							/* Upper word is bus number, */
-							/* lower word is slot number */
-							/* Default value of 0xFFFFffff turns this */
-							/* off */
+				/* slot only . Allows for having multiple */
+				/* WL devices at once in a PC */
+				/* Only one instance of dhd will be */
+				/* usable at a time */
+				/* Upper word is bus number, */
+				/* lower word is slot number */
+				/* Default value of 0xFFFFffff turns this */
+				/* off */
 module_param(sd_pci_slot, uint, 0);
 
 
@@ -385,7 +385,7 @@ bcmsdh_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			          "Probing unknown device",
 			          pdev->bus->number, PCI_SLOT(pdev->devfn),
 			          pdev->vendor, pdev->device));
-			          return -ENODEV;
+			return -ENODEV;
 		}
 		SDLX_MSG(("%s: %s: bus %X, slot %X, vendor %X, device %X (good PCI location)\n",
 		          __FUNCTION__,
@@ -468,7 +468,7 @@ bcmsdh_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* try to attach to the target device */
 	if (!(sdhc->ch = drvinfo.attach(VENDOR_BROADCOM, /* pdev->vendor, */
 	                                bcmsdh_query_device(sdh) & 0xFFFF, 0, 0, 0, 0,
-	                                (void *)regs, NULL, sdh))) {
+	                                (void *)regs, NULL, sdh, pdev->dev))) {
 		SDLX_MSG(("%s: device attach failed\n", __FUNCTION__));
 		goto err;
 	}
@@ -597,6 +597,7 @@ void bcmsdh_oob_intr_set(bool enable)
 	}
 	spin_unlock_irqrestore(&sdhcinfo->irq_lock, flags);
 }
+
 static irqreturn_t wlan_oob_irq(int irq, void *dev_id)
 {
 	dhd_pub_t *dhdp;
@@ -609,8 +610,6 @@ static irqreturn_t wlan_oob_irq(int irq, void *dev_id)
 		SDLX_MSG(("Out of band GPIO interrupt fired way too early\n"));
 		return IRQ_HANDLED;
 	}
-
-	WAKE_LOCK_TIMEOUT(dhdp, WAKE_LOCK_TMOUT, 25);
 
 	dhdsdio_isr((void *)dhdp->bus);
 
@@ -637,7 +636,7 @@ int bcmsdh_register_oob_intr(void * dhdp)
 		if (error)
 			return -ENODEV;
 
-		set_irq_wake(sdhcinfo->oob_irq, 1);
+		enable_irq_wake(sdhcinfo->oob_irq);
 		sdhcinfo->oob_irq_registered = TRUE;
 	}
 
@@ -646,28 +645,28 @@ int bcmsdh_register_oob_intr(void * dhdp)
 
 void bcmsdh_set_irq(int flag)
 {
-       if (sdhcinfo->oob_irq_registered) {
-               SDLX_MSG(("%s Flag = %d", __FUNCTION__, flag));
-               if (flag) {
-                       enable_irq(sdhcinfo->oob_irq);
-                       enable_irq_wake(sdhcinfo->oob_irq);
-               } else {
-                       disable_irq_wake(sdhcinfo->oob_irq);
-                       disable_irq(sdhcinfo->oob_irq);
-               }
-       }
+	if (sdhcinfo->oob_irq_registered) {
+		SDLX_MSG(("%s Flag = %d", __FUNCTION__, flag));
+		if (flag) {
+			enable_irq(sdhcinfo->oob_irq);
+			enable_irq_wake(sdhcinfo->oob_irq);
+		} else {
+			disable_irq_wake(sdhcinfo->oob_irq);
+			disable_irq(sdhcinfo->oob_irq);
+		}
+	}
 }
 
 void bcmsdh_unregister_oob_intr(void)
 {
 	SDLX_MSG(("%s: Enter\n", __FUNCTION__));
 
-       if (sdhcinfo->oob_irq_registered) {
-               set_irq_wake(sdhcinfo->oob_irq, 0);
-               disable_irq(sdhcinfo->oob_irq); /* just in case.. */
-               free_irq(sdhcinfo->oob_irq, NULL);
-               sdhcinfo->oob_irq_registered = FALSE;
-       }
+	if (sdhcinfo->oob_irq_registered) {
+		disable_irq_wake(sdhcinfo->oob_irq);
+		disable_irq(sdhcinfo->oob_irq);	/* just in case.. */
+		free_irq(sdhcinfo->oob_irq, NULL);
+		sdhcinfo->oob_irq_registered = FALSE;
+	}
 }
 #endif /* defined(OOB_INTR_ONLY) */
 /* Module parameters specific to each host-controller driver */

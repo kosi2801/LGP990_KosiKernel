@@ -1744,6 +1744,7 @@
 0x9d311990	simple_fill_super	vmlinux	EXPORT_SYMBOL
 0x1aae4bac	have_submounts	vmlinux	EXPORT_SYMBOL
 0x07cc4a5d	printk_timed_ratelimit	vmlinux	EXPORT_SYMBOL
+0x8528b39f	sock_queue_err_skb	vmlinux	EXPORT_SYMBOL
 0xe6ebc016	key_create_or_update	vmlinux	EXPORT_SYMBOL
 0xf397b9aa	__tasklet_schedule	vmlinux	EXPORT_SYMBOL
 0xf4f14de6	rtnl_trylock	vmlinux	EXPORT_SYMBOL
