@@ -1,0 +1,5 @@
+Experimental branch: experimental_bcm_driver_update
+
+This branch is for trying to update the Broadcom 4329 WiFi driver to an
+up-to-date version. The LGE modifications in the Tegra-kernel sources
+make this a bit difficult though.
