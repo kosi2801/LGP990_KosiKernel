@@ -67,6 +67,15 @@
 #include <linux/wlan_plat.h>
 static struct wifi_platform_data *wifi_control_data = NULL;
 #endif
+
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-03-30, change ifname to wlan%d */
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+#undef alloc_etherdev
+#define alloc_etherdev(sizeof_priv) \
+	alloc_netdev(sizeof_priv, "wlan%d", ether_setup)
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-03-30, change ifname to wlan%d */
+
 struct semaphore wifi_control_sem;
 
 static struct resource *wifi_irqres = NULL;
@@ -351,6 +360,11 @@ struct semaphore dhd_registration_sem;
 /* load firmware and/or nvram values from the filesystem */
 module_param_string(firmware_path, firmware_path, MOD_PARAM_PATHLEN, 0);
 module_param_string(nvram_path, nvram_path, MOD_PARAM_PATHLEN, 0);
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-04-03, configs */
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+module_param_string(config_path, config_path, MOD_PARAM_PATHLEN, 0);
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-04-03, configs */
 
 /* Error bits */
 module_param(dhd_msg_level, int, 0);
@@ -386,7 +400,14 @@ uint dhd_pkt_filter_init = 0;
 module_param(dhd_pkt_filter_init, uint, 0);
 
 /* Pkt filter mode control */
+// 20101008 byoungwook.baek@lge.com, bug-fix: When LCD turned off, multicast packet is filtered [START]
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+/* Pkt filter deny mode */
+uint dhd_master_mode = FALSE;
+#else
 uint dhd_master_mode = TRUE;
+#endif
+// 20101008 byoungwook.baek@lge.com, bug-fix: When LCD turned off, multicast packet is filtered [END]
 module_param(dhd_master_mode, uint, 1);
 
 /* Watchdog thread priority, -1 to use kernel timer */
@@ -2640,12 +2661,34 @@ dhd_module_cleanup(void)
 	dhd_customer_gpio_wlan_ctrl(WLAN_POWER_OFF);
 }
 
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+#include <linux/mm.h>
+/* check free memory at physical pool */
+int check_low_mem(unsigned int kbytes )
+{
+	struct sysinfo i;
+	si_meminfo(&i);
+#define __KBYTE(x) (((x) << (PAGE_SHIFT - 10)))
+
+	if( kbytes > __KBYTE(i.freeram))
+	{
+		printk("Low memory --> MemFree :     %8lukB\n", __KBYTE(i.freeram));
+		return -1; /* opps */	
+	}
+	return 0; /* ok go */
+}
+#endif	/* CONFIG_LGE_BCM432X_PATCH */
 static int __init
 dhd_module_init(void)
 {
 	int error;
 
 	DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+	if(check_low_mem(1536/*1.5MBytes*/)){
+		return -ENOMEM;
+	}
+#endif	/* CONFIG_LGE_BCM432X_PATCH */
 
 	/* Sanity check on the module parameters */
 	do {
@@ -2943,9 +2986,24 @@ dhd_os_sdtxunlock(dhd_pub_t *pub)
 }
 
 #ifdef DHD_USE_STATIC_BUF
+#if defined(CONFIG_LGE_BCM432X_PATCH) && defined(CONFIG_BRCM_USE_STATIC_BUF)
+extern void* mem_prealloc( int section, unsigned long size);
+#endif	/* defined(CONFIG_LGE_BCM432X_PATCH) && defined(CONFIG_BRCM_USE_STATIC_BUF) */
 void * dhd_os_prealloc(int section, unsigned long size)
 {
-#if defined(CUSTOMER_HW2) && defined(CONFIG_WIFI_CONTROL_FUNC)
+#if defined(CONFIG_LGE_BCM432X_PATCH) && defined(CONFIG_BRCM_USE_STATIC_BUF)
+	void *alloc_ptr = NULL;
+
+	alloc_ptr = mem_prealloc(section, size);
+	if (alloc_ptr)
+	{
+		DHD_INFO(("success alloc section %d\n", section));
+		bzero(alloc_ptr, size);
+		return alloc_ptr;
+	}
+	DHD_ERROR(("can't alloc section %d\n", section));
+	return 0;
+#elif defined(CUSTOMER_HW2) && defined(CONFIG_WIFI_CONTROL_FUNC)
 	void *alloc_ptr = NULL;
 	if (wifi_control_data && wifi_control_data->mem_prealloc)
 	{

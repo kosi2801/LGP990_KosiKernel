@@ -54,6 +54,11 @@ int dhd_msg_level;
 
 char fw_path[MOD_PARAM_PATHLEN];
 char nv_path[MOD_PARAM_PATHLEN];
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-04-03, configs */
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+char config_path[MOD_PARAM_PATHLEN] = "";
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-04-03, configs */
 
 /* Last connection success/failure status */
 uint32 dhd_conn_event;
@@ -1226,6 +1231,243 @@ dhd_arp_offload_enable(dhd_pub_t * dhd, int arp_enable)
 }
 #endif
 
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-04-03, configs */
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+#include <linux/fs.h>
+#include <linux/ctype.h>
+
+#if 0
+
+CONFIG FILE FORMAT
+==================
+
+AVAILABLE PARAMETERS
+~~~~~~~~~~~~~~~~~~~~
++====================+=========================================================+
+| VARIABLE NAME      | DESCRIPTION                                             |
++====================+=========================================================+
+| btc_mode           | BTCoexist                                               |
+|                    | 0: disable, 1: enable                                   |
++--------------------+---------------------------------------------------------+
+| country            | Country Code                                            |
+|                    | KR, EU, US or AU ...                                    |
++--------------------+---------------------------------------------------------+
+| vlan_mode          | Specifies the use of 802.1Q Tags (ON, OFF, AUTO).       |
+|                    | 0: off, 1: on, -1: auto                                 |
++--------------------+---------------------------------------------------------+
+| mpc                | Minimum Power Consumption                               |
+|                    | 0: disable, 1: enable                                   |
++--------------------+---------------------------------------------------------+
+| wme                | WME QoS                                                 |
+|                    | 0: disable, 1: enable                                   |
++--------------------+---------------------------------------------------------+
+| wme_apsd           | WME APSD (Advanced Power Save Delivery)                 |
+|                    | 0: disable, 1: enable                                   |
++--------------------+---------------------------------------------------------+
+| wme_qosinfo        | Set APSD parameters on STA.                             |
+|                    | - max_sp_len = number of frames per USP: 0 (all), 2, 4, |
+|                    |   or 6                                                  |
+|                    | - be, bk, vi, and vo = 0 to disable, 1 to enable U-APSD |
+|                    |   per AC                                                |
+|                    |        <max_sp_len> <be> <bk> <vi> <vo>                 |
+|                    | 0x0f =      0         1    1    1    1                  |
+|                    | 0x2f =      2         1    1    1    1                  |
+|                    | 0x4f =      4         1    1    1    1                  |
+|                    | 0x6f =      6         1    1    1    1                  |
+|                    | 0x03 =      0         0    0    1    1                  |
++--------------------+---------------------------------------------------------+
+| wme_auto_trigger   | 0: disable, 1: enable                                   |
++--------------------+---------------------------------------------------------+
+| wme_apsd_trigger   | in msec, 0: disable                                     |
++--------------------+---------------------------------------------------------+
+| roam_off           | 0: roaming on, 1: roaming off                           |
++--------------------+---------------------------------------------------------+
+| roam_scan_period   | in sec                                                  |
++--------------------+---------------------------------------------------------+
+| roam_delta         | in dB                                                   |
++--------------------+---------------------------------------------------------+
+| roam_trigger       | in dBm                                                  |
++--------------------+---------------------------------------------------------+
+| PM                 | Power Saving Mode                                       |
+|                    | 0: off, 1: max, 2: fast                                 |
++--------------------+---------------------------------------------------------+
+| assoc_listen       | The Listen Interval sent in association requests        |
+|                    | number of beacon                                        |
++--------------------+---------------------------------------------------------+
+
+EXAMPLE
+~~~~~~~
+btc_mode=1
+country=EU
+vlan_mode=0
+mpc=1
+wme=1
+wme_apsd=0
+wme_qosinfo=0x00
+wme_auto_trigger=1
+wme_apsd_trigger=0
+roam_off=0
+roam_scan_period=10
+roam_delta=20
+roam_trigger=-70
+PM=2
+assoc_listen=1
+
+#endif
+
+static int dhd_preinit_proc(dhd_pub_t *dhd, int ifidx, char *name, char *value)
+{
+	int var_int;
+
+	if (!strcmp(name, "country")) {
+		return dhdcdc_set_ioctl(dhd, ifidx, WLC_SET_COUNTRY,
+				value, WLC_CNTRY_BUF_SZ);
+	} else if (!strcmp(name, "roam_scan_period")) {
+		var_int = (int)simple_strtol(value, NULL, 0);
+		return dhdcdc_set_ioctl(dhd, ifidx, WLC_SET_ROAM_SCAN_PERIOD,
+				&var_int, sizeof(var_int));
+	} else if (!strcmp(name, "roam_delta") || !strcmp(name, "roam_trigger")) {
+		struct {
+			int val;
+			int band;
+		} x;
+		x.val = (int)simple_strtol(value, NULL, 0);
+		x.band = WLC_BAND_AUTO;
+		return dhdcdc_set_ioctl(dhd, ifidx, strcmp(name, "roam_delta") ?
+				WLC_SET_ROAM_TRIGGER : WLC_SET_ROAM_DELTA, &x, sizeof(x));
+	} else if (!strcmp(name, "PM")) {
+		var_int = (int)simple_strtol(value, NULL, 0);
+		return dhdcdc_set_ioctl(dhd, ifidx, WLC_SET_PM,
+				&var_int, sizeof(var_int));
+/* LGE_CHANGE_S, [jisung.yang@lge.com], 2010-06-28, < MAC write > */
+	} else if(!strcmp(name,"cur_etheraddr")){
+        struct ether_addr ea;
+        char buf[32];
+        uint iovlen;
+        int ret;
+		
+		DHD_ERROR(("%s: cur_etheraddr", __FUNCTION__));
+		
+        bcm_ether_atoe(value, &ea);
+//htclk fail patch
+/*        ret = memcmp( &ea.octet, dhd->mac.octet, ETHER_ADDR_LEN);
+		
+        if(ret == 0){
+                DHD_ERROR(("%s: Same Macaddr\n",__FUNCTION__));
+                return 0;
+        }
+
+        DHD_ERROR(("%s: Change Macaddr = %02X:%02X:%02X:%02X:%02X:%02X\n",__FUNCTION__,
+                ea.octet[0], ea.octet[1], ea.octet[2],
+                ea.octet[3], ea.octet[4], ea.octet[5]));
+*/
+		printk("%s: Change Macaddr = %02X:%02X:%02X:%02X:%02X:%02X\n",__FUNCTION__,
+            	ea.octet[0], ea.octet[1], ea.octet[2],
+                ea.octet[3], ea.octet[4], ea.octet[5]);
+
+        iovlen = bcm_mkiovar("cur_etheraddr", (char*)&ea, ETHER_ADDR_LEN, buf, 32);
+
+        ret = dhdcdc_set_ioctl(dhd, ifidx, WLC_SET_VAR, buf, iovlen);
+        if (ret < 0) {
+            DHD_ERROR(("%s: can't set MAC address , error=%d\n", __FUNCTION__, ret));
+            return ret;
+        }
+        else{
+            memcpy(dhd->mac.octet, (void *)&ea, ETHER_ADDR_LEN);
+            return ret;
+        }
+/* LGE_CHANGE_E, [jisung.yang@lge.com], 2010-06-28, < MAC write > */		
+	} else {
+		uint iovlen;
+		char iovbuf[WLC_IOCTL_SMLEN];
+
+		/* wlu_iovar_setint */
+		var_int = (int)simple_strtol(value, NULL, 0);
+
+		/* Setup timeout bcn_timeout from dhd driver 4.217.48 */
+		if(!strcmp(name, "roam_off")) {
+			/* Setup timeout if Beacons are lost to report link down */
+			if (var_int) {
+				uint bcn_timeout = 2;
+				bcm_mkiovar("bcn_timeout", (char *)&bcn_timeout, 4, iovbuf, sizeof(iovbuf));
+				dhdcdc_set_ioctl(dhd, 0, WLC_SET_VAR, iovbuf, sizeof(iovbuf));
+			}
+		}
+		/* Setup timeout bcm_timeout from dhd driver 4.217.48 */
+
+		iovlen = bcm_mkiovar(name, (char *)&var_int, sizeof(var_int),
+				iovbuf, sizeof(iovbuf));
+		return dhdcdc_set_ioctl(dhd, ifidx, WLC_SET_VAR,
+				iovbuf, iovlen);
+	}
+
+	return 0;
+}
+
+static int dhd_preinit_config(dhd_pub_t *dhd, int ifidx)
+{
+	mm_segment_t old_fs;
+	struct kstat stat;
+	struct file *fp = NULL;
+	unsigned int len;
+	char *buf = NULL, *p, *name, *value;
+	int ret = 0;
+
+	if (!*config_path)
+		return 0;
+
+	old_fs = get_fs();
+	set_fs(get_ds());
+	if ((ret = vfs_stat(config_path, &stat))) {
+		set_fs(old_fs);
+		printk(KERN_ERR "%s: Failed to get information (%d)\n",
+				config_path, ret);
+		return ret;
+	}
+	set_fs(old_fs);
+
+	if (!(buf = MALLOC(dhd->osh, stat.size + 1))) {
+		printk(KERN_ERR "Failed to allocate memory %llu bytes\n", stat.size);
+		return -ENOMEM;
+	}
+
+	if (!(fp = dhd_os_open_image(config_path)) ||
+		(len = dhd_os_get_image_block(buf, stat.size, fp)) < 0)
+		goto err;
+
+	buf[stat.size] = '\0';
+	for (p = buf; *p; p++) {
+		if (isspace(*p))
+			continue;
+		for (name = p++; *p && !isspace(*p); p++) {
+			if (*p == '=') {
+				*p = '\0';
+				p++;
+				for (value = p; *p && !isspace(*p); p++);
+				*p = '\0';
+				if ((ret = dhd_preinit_proc(dhd, ifidx, name, value)) < 0)
+					printk(KERN_ERR "%s: %s=%s\n",
+							bcmerrorstr(ret), name, value);
+				break;
+			}
+		}
+	}
+	ret = 0;
+
+out:
+	if (fp)
+		dhd_os_close_image(fp);
+	if (buf)
+		MFREE(dhd->osh, buf, stat.size+1);
+	return ret;
+
+err:
+	ret = -1;
+	goto out;
+}
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-04-03, configs */
+
 
 void dhd_arp_cleanup(dhd_pub_t *dhd)
 {
@@ -1308,13 +1550,19 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	char iovbuf[WL_EVENTING_MASK_LEN + 12];	/*  Room for "event_msgs" + '\0' + bitvec  */
 	uint up = 0;
 	char buf[128], *ptr;
+#if !defined(CONFIG_LGE_BCM432X_PATCH)
 	uint power_mode = PM_FAST;
+#endif /* CONFIG_LGE_BCM432X_PATCH */
 	uint32 dongle_align = DHD_SDALIGN;
 	uint32 glom = 0;
+#if !defined(CONFIG_LGE_BCM432X_PATCH)
 	uint bcn_timeout = 4;
+#endif /* CONFIG_LGE_BCM432X_PATCH */
 	int scan_assoc_time = 40;
 	int scan_unassoc_time = 40;
+#if !defined(CONFIG_LGE_BCM432X_PATCH)
 	uint32 listen_interval = LISTEN_INTERVAL; /* Default Listen Interval in Beacons */
+#endif /* CONFIG_LGE_BCM432X_PATCH */
 #if defined(SOFTAP)
 	uint dtim = 1;
 #endif
@@ -1368,6 +1616,12 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	}
 #endif /* SET_RANDOM_MAC_SOFTAP */
 
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-04-03, configs */
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+	dhd_preinit_config(dhd, 0);
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-04-03, configs */
+
 	/* Set Country code */
 	if (dhd->dhd_cspec.ccode[0] != 0) {
 		bcm_mkiovar("country", (char *)&dhd->dhd_cspec, \
@@ -1377,10 +1631,12 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 		}
 	}
 
+#if !defined(CONFIG_LGE_BCM432X_PATCH)
 	/* Set Listen Interval */
 	bcm_mkiovar("assoc_listen", (char *)&listen_interval, 4, iovbuf, sizeof(iovbuf));
 	if ((ret = dhdcdc_set_ioctl(dhd, 0, WLC_SET_VAR, iovbuf, sizeof(iovbuf))) < 0)
 		DHD_ERROR(("%s assoc_listen failed %d\n", __FUNCTION__, ret));
+#endif /* CONFIG_LGE_BCM432X_PATCH */
 
 	/* query for 'ver' to get version info from firmware */
 	memset(buf, 0, sizeof(buf));
@@ -1391,8 +1647,12 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	/* Print fw version info */
 	DHD_ERROR(("Firmware version = %s\n", buf));
 
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-08-27, already PM setup is configured */
+#if !defined(CONFIG_LGE_BCM432X_PATCH)
 	/* Set PowerSave mode */
 	dhdcdc_set_ioctl(dhd, 0, WLC_SET_PM, (char *)&power_mode, sizeof(power_mode));
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-08-27, already PM setup is configured */
 
 	/* Match Host and Dongle rx alignment */
 	bcm_mkiovar("bus:txglomalign", (char *)&dongle_align, 4, iovbuf, sizeof(iovbuf));
@@ -1402,6 +1662,8 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	bcm_mkiovar("bus:txglom", (char *)&glom, 4, iovbuf, sizeof(iovbuf));
 	dhdcdc_set_ioctl(dhd, 0, WLC_SET_VAR, iovbuf, sizeof(iovbuf));
 
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-04-08, roam_off */
+#if !defined(CONFIG_LGE_BCM432X_PATCH)
 	/* Setup timeout if Beacons are lost and roam is off to report link down */
 	bcm_mkiovar("bcn_timeout", (char *)&bcn_timeout, 4, iovbuf, sizeof(iovbuf));
 	dhdcdc_set_ioctl(dhd, 0, WLC_SET_VAR, iovbuf, sizeof(iovbuf));
@@ -1409,6 +1671,8 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	/* Enable/Disable build-in roaming to allowed ext supplicant to take of romaing */
 	bcm_mkiovar("roam_off", (char *)&dhd_roam, 4, iovbuf, sizeof(iovbuf));
 	dhdcdc_set_ioctl(dhd, 0, WLC_SET_VAR, iovbuf, sizeof(iovbuf));
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-04-08, roam_off */
 
 #if defined(SOFTAP)
 	if (ap_fw_loaded == TRUE) {
@@ -1416,6 +1680,7 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	}
 #endif
 
+#if !defined(CONFIG_LGE_BCM432X_PATCH)
 	if (dhd_roam == 0)
 	{
 		/* set internal roaming roaming parameters */
@@ -1461,6 +1726,7 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 				DHD_ERROR(("%s: Original band restore failed\n", __FUNCTION__));
 		}
 	}
+#endif /* CONFIG_LGE_BCM432X_PATCH */
 
 	/* Force STA UP */
 	if (dhd_radio_up)

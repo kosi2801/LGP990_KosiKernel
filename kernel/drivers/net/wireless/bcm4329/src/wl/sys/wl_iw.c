@@ -24,7 +24,6 @@
  * $Id: wl_iw.c,v 1.51.4.9.2.6.4.142.4.78 2011/02/11 21:27:52 Exp $
  */
 
-
 #include <typedefs.h>
 #include <linuxver.h>
 #include <osl.h>
@@ -1088,7 +1087,7 @@ wl_format_ssid(char* ssid_buf, uint8* ssid, int ssid_len)
 		if (c == '\\') {
 			*p++ = '\\';
 			*p++ = '\\';
-		} else if (isprint((uchar)c)) {
+		} else if (bcm_isprint((uchar)c)) {
 			*p++ = (char)c;
 		} else {
 			p += sprintf(p, "\\x%02X", c);
@@ -1575,6 +1574,7 @@ wl_control_wl_start(struct net_device *dev)
 	dhd_os_start_lock(iw->pub);
 
 	if (g_onoff == G_WLAN_SET_OFF) {
+#if defined(CONFIG_BRCM_USE_GPIO_RESET) /* Do not use GPIO Reset at On/Off. Use mpc. */
 		dhd_customer_gpio_wlan_ctrl(WLAN_RESET_ON);
 
 #if defined(BCMLXSDMMC)
@@ -1588,8 +1588,15 @@ wl_control_wl_start(struct net_device *dev)
 			sdioh_start(NULL, 1);
 #endif
 			dhd_dev_init_ioctl(dev);
+#else	/* defined(CONFIG_BRCM_USE_GPIO_RESET) */
+		 g_onoff = G_WLAN_SET_ON;
+		 wl_iw_send_priv_event(dev, "START");
+		 printk("Exited %s \n", __FUNCTION__);
+#endif	/* defined(CONFIG_BRCM_USE_GPIO_RESET) */ /* Do not use GPIO Reset at On/Off. Use mpc. */
 			g_onoff = G_WLAN_SET_ON;
+#if defined(CONFIG_BRCM_USE_GPIO_RESET) /* Do not use GPIO Reset at On/Off. Use mpc. */
 		}
+#endif	/* defined(CONFIG_BRCM_USE_GPIO_RESET) */ /* Do not use GPIO Reset at On/Off. Use mpc. */
 	}
 	WL_TRACE(("Exited %s \n", __FUNCTION__));
 
@@ -1630,8 +1637,9 @@ wl_iw_control_wl_off(
 #if defined(WL_IW_USE_ISCAN)
 		g_iscan->iscan_state = ISCAN_STATE_IDLE;
 #endif
-
+#if defined(CONFIG_BRCM_USE_GPIO_RESET)
 		dhd_dev_reset(dev, 1);
+#endif /* CONFIG_BRCM_USE_GPIO_RESET */
 
 #if defined(WL_IW_USE_ISCAN)
 #if !defined(CSCAN)
@@ -1648,6 +1656,7 @@ wl_iw_control_wl_off(
 #endif
 #endif
 
+#if defined(CONFIG_BRCM_USE_GPIO_RESET) && !defined(CONFIG_BRCM_USE_DEEPSLEEP)
 #if defined(BCMLXSDMMC)
 		sdioh_stop(NULL);
 #endif
@@ -1655,6 +1664,7 @@ wl_iw_control_wl_off(
 		net_os_set_dtim_skip(dev, 0);
 
 		dhd_customer_gpio_wlan_ctrl(WLAN_RESET_OFF);
+#endif /* CONFIG_BRCM_USE_GPIO_RESET */
 
 		wl_iw_send_priv_event(dev, "STOP");
 	}
@@ -1678,7 +1688,11 @@ wl_iw_control_wl_on(
 
 	if ((ret = wl_control_wl_start(dev)) != BCME_OK) {
 		WL_ERROR(("%s failed first attemp\n", __FUNCTION__));
+#if defined(CONFIG_BRCM_USE_GPIO_RESET) && !defined(CONFIG_BRCM_USE_DEEPSLEEP)
 		dhd_customer_gpio_wlan_ctrl(WLAN_RESET_OFF);
+#else
+		bcm_mdelay(100);
+#endif /* CONFIG_BRCM_USE_GPIO_RESET */
 		if ((ret = wl_control_wl_start(dev)) != BCME_OK) {
 			WL_ERROR(("%s failed second attemp\n", __FUNCTION__));
 			net_os_send_hang_message(dev);

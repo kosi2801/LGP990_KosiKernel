@@ -35,6 +35,23 @@
 #include <wlioctl.h>
 #include <wl_iw.h>
 
+// sunghoon.kim, 2010,11,05 , for remove CONFIG_BCM4329_GPIO_WL_RESET in defconfig [START]
+#ifdef  CONFIG_BCM4329_GPIO_WL_RESET
+#undef CONFIG_BCM4329_GPIO_WL_RESET
+#endif
+#if defined (CONFIG_MACH_STAR_MDM_C)
+#define CONFIG_BCM4329_GPIO_WL_RESET 131
+#else //TMUS_E
+#define CONFIG_BCM4329_GPIO_WL_RESET 177
+#endif
+// sunghoon.kim, 2010,11,05 , for remove CONFIG_BCM4329_GPIO_WL_RESET in defconfig [END]
+
+/* LGE_CHANGE_S [yoohoo@lge.com] 2009-05-14, support start/stop */
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+#include <asm/gpio.h>
+#include <linux/interrupt.h>
+#endif /* CONFIG_LGE_BCM432X_PATCH */
+/* LGE_CHANGE_E [yoohoo@lge.com] 2009-05-14, support start/stop */
 #define WL_ERROR(x) printf x
 #define WL_TRACE(x)
 
@@ -102,6 +119,14 @@ int dhd_customer_oob_irq_map(unsigned long *irq_flags_ptr)
 }
 #endif /* defined(OOB_INTR_ONLY) */
 
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+#include "mach/nvrm_linux.h"
+#include "mach/io.h"
+#include "nvodm_sdio.h"
+extern NvBool NvOdmWlanEnable(NvBool IsEnable);
+
+//extern void do_wifi_cardetect(void *p);
+#endif
 /* Customer function to control hw specific wlan gpios */
 void
 dhd_customer_gpio_wlan_ctrl(int onoff)
@@ -110,6 +135,9 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 		case WLAN_RESET_OFF:
 			WL_TRACE(("%s: call customer specific GPIO to insert WLAN RESET\n",
 				__FUNCTION__));
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+			gpio_set_value(CONFIG_BCM4329_GPIO_WL_RESET, 0);
+#endif
 #ifdef CUSTOMER_HW
 			bcm_wlan_power_off(2);
 #endif /* CUSTOMER_HW */
@@ -122,6 +150,10 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 		case WLAN_RESET_ON:
 			WL_TRACE(("%s: callc customer specific GPIO to remove WLAN RESET\n",
 				__FUNCTION__));
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+			gpio_set_value(CONFIG_BCM4329_GPIO_WL_RESET, 1);
+			mdelay(150);	//mingi
+#endif
 #ifdef CUSTOMER_HW
 			bcm_wlan_power_on(2);
 #endif /* CUSTOMER_HW */
@@ -134,6 +166,12 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 		case WLAN_POWER_OFF:
 			WL_TRACE(("%s: call customer specific GPIO to turn off WL_REG_ON\n",
 				__FUNCTION__));
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+		//	gpio_set_value(CONFIG_BCM4329_GPIO_WL_RESET, 0);
+			NvOdmWlanEnable(NV_FALSE);
+			do_wifi_cardetect(NULL);
+			
+#endif
 #ifdef CUSTOMER_HW
 			bcm_wlan_power_off(1);
 #endif /* CUSTOMER_HW */
@@ -142,6 +180,15 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 		case WLAN_POWER_ON:
 			WL_TRACE(("%s: call customer specific GPIO to turn on WL_REG_ON\n",
 				__FUNCTION__));
+#if defined(CONFIG_LGE_BCM432X_PATCH)
+
+			printk("[Wi-Fi] CONFIG_BCM4329_GPIO_WL_RESET : %d\n",	gpio_get_value(CONFIG_BCM4329_GPIO_WL_RESET));
+			NvOdmWlanEnable(NV_TRUE);	
+		//	gpio_set_value(CONFIG_BCM4329_GPIO_WL_RESET, 1);
+			do_wifi_cardetect(NULL);
+			mdelay(150);	//mingi
+			
+#endif
 #ifdef CUSTOMER_HW
 			bcm_wlan_power_on(1);
 			/* Lets customer power to get stable */
