@@ -71,17 +71,18 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/commit/4e133cc9ec0525a909dd42d0bc55fe4b5f5cc2b7
 -- arm: tegra: power: fix LP2 scheduling in atomic 
 --- https://github.com/vadonka/lge-kernel-kang/commit/8b4c59e15f646f24fc4978474acd52e1aae63953
--- Supress some error log 
+-- Supress some error log cpu
 --- https://github.com/vadonka/lge-kernel-kang/commit/27f8db397bcf20be0dab4096d269e96b9e6c8b7e
+- introduce JRCU
+-- jrcu-commits from https://github.com/poitee/sgtwifi/commits/master
+-- fixes to make it compilable from https://github.com/StefanGuendhoer/LG-P990-O2X----guestekrnL-for-stock/tree/c65ae3f942e72ee8385d0e80fefb9c383d6c994f
 -- lib: introduce some memory copy macros and functions 
 --- https://github.com/vadonka/lge-kernel-kang/commit/11fe83394e003aa0c4a1e5d0b0e678d2de72d0db
 -- Optimized ARM RWSEM algorithm 
 --- https://github.com/vadonka/lge-kernel-kang/commit/2a11063968cf8613273c6fe8e05c01cfaaa9b134
 --- backport/fix for 2.6.36
-
-- introduce JRCU
--- jrcu-commits from https://github.com/poitee/sgtwifi/commits/master
--- fixes to make it compilable from https://github.com/StefanGuendhoer/LG-P990-O2X----guestekrnL-for-stock/tree/c65ae3f942e72ee8385d0e80fefb9c383d6c994f
+-- cpuidle.c: reduce pwrgood_latency 
+--- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
 
 
 TODO:
