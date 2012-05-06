@@ -1857,6 +1857,7 @@ extern void sched_clock_tick(void);
 extern void sched_clock_idle_sleep_event(void);
 extern void sched_clock_idle_wakeup_event(u64 delta_ns);
 #endif
+extern void force_cpu_resched(int cpu);
 
 /*
  * For kernel-internal use: high-speed (but slightly incorrect) per-cpu

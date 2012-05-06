@@ -74,6 +74,11 @@ Based on Spica SR3R
 -- Supress some error log 
 --- https://github.com/vadonka/lge-kernel-kang/commit/27f8db397bcf20be0dab4096d269e96b9e6c8b7e
 
+- introduce JRCU
+-- jrcu-commits from https://github.com/poitee/sgtwifi/commits/master
+-- fixes to make it compilable from https://github.com/StefanGuendhoer/LG-P990-O2X----guestekrnL-for-stock/tree/c65ae3f942e72ee8385d0e80fefb9c383d6c994f
+
+
 TODO:
 - cherrypicking from vadonka
 
