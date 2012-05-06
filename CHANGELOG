@@ -73,6 +73,8 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/commit/8b4c59e15f646f24fc4978474acd52e1aae63953
 -- Supress some error log 
 --- https://github.com/vadonka/lge-kernel-kang/commit/27f8db397bcf20be0dab4096d269e96b9e6c8b7e
+-- lib: introduce some memory copy macros and functions 
+--- https://github.com/vadonka/lge-kernel-kang/commit/11fe83394e003aa0c4a1e5d0b0e678d2de72d0db
 
 - introduce JRCU
 -- jrcu-commits from https://github.com/poitee/sgtwifi/commits/master
