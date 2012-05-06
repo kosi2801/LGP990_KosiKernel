@@ -75,6 +75,9 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/commit/27f8db397bcf20be0dab4096d269e96b9e6c8b7e
 -- lib: introduce some memory copy macros and functions 
 --- https://github.com/vadonka/lge-kernel-kang/commit/11fe83394e003aa0c4a1e5d0b0e678d2de72d0db
+-- Optimized ARM RWSEM algorithm 
+--- https://github.com/vadonka/lge-kernel-kang/commit/2a11063968cf8613273c6fe8e05c01cfaaa9b134
+--- backport/fix for 2.6.36
 
 - introduce JRCU
 -- jrcu-commits from https://github.com/poitee/sgtwifi/commits/master
