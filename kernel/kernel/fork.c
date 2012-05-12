@@ -1090,6 +1090,10 @@ static struct task_struct *copy_process(unsigned long clone_flags,
 	p->prev_utime = cputime_zero;
 	p->prev_stime = cputime_zero;
 
+	/*
+	 * Save current task's (not effective) timer slack value as default
+	 * timer slack value for new task.
+	 */
 	p->default_timer_slack_ns = current->timer_slack_ns;
 
 	task_io_accounting_init(&p->ioac);
