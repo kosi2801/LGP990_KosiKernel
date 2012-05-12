@@ -78,13 +78,14 @@ Based on Spica SR3R
 -- fixes to make it compilable from https://github.com/StefanGuendhoer/LG-P990-O2X----guestekrnL-for-stock/tree/c65ae3f942e72ee8385d0e80fefb9c383d6c994f
 -- lib: introduce some memory copy macros and functions 
 --- https://github.com/vadonka/lge-kernel-kang/commit/11fe83394e003aa0c4a1e5d0b0e678d2de72d0db
--- Optimized ARM RWSEM algorithm 
---- https://github.com/vadonka/lge-kernel-kang/commit/2a11063968cf8613273c6fe8e05c01cfaaa9b134
---- backport/fix for 2.6.36
--- cpuidle.c: reduce pwrgood_latency 
---- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
--- added missing code for support of cgroup timer slack, update to v10
---- http://www.digipedia.pl/usenet/thread/18762/95/
+- Optimized ARM RWSEM algorithm 
+-- https://github.com/vadonka/lge-kernel-kang/commit/2a11063968cf8613273c6fe8e05c01cfaaa9b134
+-- backport/fix for 2.6.36
+- cpuidle.c: reduce pwrgood_latency 
+-- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
+- added missing code for support of cgroup timer slack, update to v10
+-- http://www.digipedia.pl/usenet/thread/18762/95/
+- optimize build flags
 
 TODO:
 - cherrypicking from vadonka

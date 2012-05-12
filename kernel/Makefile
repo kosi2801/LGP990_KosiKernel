@@ -326,14 +326,15 @@ CHECK		= sparse
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 #MODFLAGS	= -DMODULE -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -fsingle-precision-constant -mfpu=vfpv3-d16 -ftree-vectorize -ffast-math
-MODFLAGS	= -DMODULE -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
+# -mthumb -Wa,-mimplicit-it=thumb -flto  
+MODFLAGS	= -DMODULE -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant -mstructure-size-boundary=32 -fgcse-las -fgcse-after-reload -fipa-pta -ftree-loop-im
 CFLAGS_MODULE   = $(MODFLAGS) 
 AFLAGS_MODULE   = $(MODFLAGS)
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
 #CFLAGS_KERNEL	= -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -fsingle-precision-constant -mfpu=vfpv3-d16 -ftree-vectorize -ffast-math
 #AFLAGS_KERNEL	= -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=softfp -fsingle-precision-constant -mfpu=vfpv3-d16 -ftree-vectorize -ffast-math
-CFLAGS_KERNEL	= -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
-AFLAGS_KERNEL	= -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant
+CFLAGS_KERNEL	= -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant -mstructure-size-boundary=32 -fgcse-las -fgcse-after-reload -fipa-pta -ftree-loop-im
+AFLAGS_KERNEL	= -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant -mstructure-size-boundary=32 -fgcse-las -fgcse-after-reload -fipa-pta -ftree-loop-im
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 # 20100705, sunghoon.kim@lge.com,[LGE_START]
@@ -549,7 +550,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -O2
 else
-KBUILD_CFLAGS	+= -O2
+KBUILD_CFLAGS	+= -O2 -march=armv7-a -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -funswitch-loops -mtune=cortex-a9 -mfloat-abi=hard -ftree-vectorize -mfpu=vfpv3-d16 -ffast-math -ffinite-math-only -fsingle-precision-constant -mstructure-size-boundary=32 -fgcse-las -fgcse-after-reload -fipa-pta -ftree-loop-im
 
 endif
 
