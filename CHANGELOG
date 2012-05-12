@@ -83,7 +83,8 @@ Based on Spica SR3R
 --- backport/fix for 2.6.36
 -- cpuidle.c: reduce pwrgood_latency 
 --- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
-
+-- added missing code for support of cgroup timer slack, update to v10
+--- http://www.digipedia.pl/usenet/thread/18762/95/
 
 TODO:
 - cherrypicking from vadonka
@@ -99,6 +100,6 @@ TODO:
 -- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git;a=blob_plain;f=drivers/net/wireless/bcmdhd/wl_iw.c;hb=6de21231e558a85d766e7d821a6542c5c1803aa8 ?
 -- http://nv-tegra.nvidia.com/gitweb/?p=linux-2.6.git&a=search&h=refs%2Fheads%2Fandroid-tegra-nv-3.1&st=commit&s=bcm ?
 
-
+- merge P999 21y changes
 
 
