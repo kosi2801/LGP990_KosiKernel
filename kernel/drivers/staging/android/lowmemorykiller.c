@@ -52,40 +52,11 @@ static size_t lowmem_minfree[6] = {
 };
 static int lowmem_minfree_size = 4;
 
-static struct task_struct *lowmem_deathpending[2];
-
 #define lowmem_print(level, x...)			\
 	do {						\
 		if (lowmem_debug_level >= (level))	\
 			printk(x);			\
 	} while (0)
-
-static int
-task_notify_func(struct notifier_block *self, unsigned long val, void *data);
-
-static struct notifier_block task_nb = {
-	.notifier_call	= task_notify_func,
-};
-
-//110219, gunwoo1.kim@lge.com, kill 2 processes at once [START]
-static int
-task_notify_func(struct notifier_block *self, unsigned long val, void *data)
-{
-	struct task_struct *task = data;
-
-	if (task == lowmem_deathpending[0])
-    {
-        lowmem_print(1, "#1 task_notify_func task(%s)(%p)\n", task->comm, task);
-		lowmem_deathpending[0] = NULL;
-    }
-    else if (task == lowmem_deathpending[1])
-    {
-        lowmem_print(1, "#2 task_notify_func task(%s)(%p)\n", task->comm, task);
-		lowmem_deathpending[1] = NULL;
-    }
-
-	return NOTIFY_OK;
-}
 
 static int lowmem_shrink(int nr_to_scan, gfp_t gfp_mask)
 {
@@ -101,24 +72,6 @@ static int lowmem_shrink(int nr_to_scan, gfp_t gfp_mask)
 	int other_file = global_page_state(NR_FILE_PAGES);
 
     // lowmem_print(1, "other_free[%d MB], other_file[%d MB]\n", (int)(other_free * 4 / 1024), (int)(other_file * 4 / 1024));
-
-	/*
-	 * If we already have a death outstanding, then
-	 * bail out right away; indicating to vmscan
-	 * that we have nothing further to offer on
-	 * this pass.
-	 *
-	 */
-	if (lowmem_deathpending[0] != NULL)
-    {
-        lowmem_print(1, "#1 lowmem_deathpending[0] (%s)(%p)\n", lowmem_deathpending[0]->comm, lowmem_deathpending[0]);
-		return 0;
-    }
-    else if (lowmem_deathpending[1] != NULL)//LGSI_MERGED_FROM_FROYO_MR
-    {
-        lowmem_print(1, "#2 lowmem_deathpending[1] (%s)(%p)\n", lowmem_deathpending[1]->comm, lowmem_deathpending[1]);
-		return 0;
-    }
 
 	if (lowmem_adj_size < array_size)
 		array_size = lowmem_adj_size;
@@ -157,6 +110,12 @@ static int lowmem_shrink(int nr_to_scan, gfp_t gfp_mask)
 			continue;
 		}
 
+		if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
+			task_unlock(p);
+			read_unlock(&tasklist_lock);
+			return 0;
+		}
+
 		oom_adj = sig->oom_adj;
 		if (oom_adj < min_adj) {
 			task_unlock(p);
@@ -183,9 +142,9 @@ static int lowmem_shrink(int nr_to_scan, gfp_t gfp_mask)
     }
     for (i = 0; i < 2 && selected[i] != NULL; i++)
     {
-        lowmem_deathpending[i] = selected[i];
         lowmem_print(1, "lowmem_shrink send sigkill(%s)(%p), tasksize[%d]\n", selected[i]->comm, selected[i], selected_tasksize[i]); 
-        force_sig(SIGKILL, selected[i]);
+        send_sig(SIGKILL, selected[i], 0);
+	set_tsk_thread_flag(selected[i], TIF_MEMDIE);
         rem -= selected_tasksize[i];
     }
 	read_unlock(&tasklist_lock);
@@ -200,7 +159,6 @@ static struct shrinker lowmem_shrinker = {
 
 static int __init lowmem_init(void)
 {
-	task_free_register(&task_nb);
 	register_shrinker(&lowmem_shrinker);
 	return 0;
 }
@@ -208,7 +166,6 @@ static int __init lowmem_init(void)
 static void __exit lowmem_exit(void)
 {
 	unregister_shrinker(&lowmem_shrinker);
-	task_free_unregister(&task_nb);
 }
 
 module_param_named(cost, lowmem_shrinker.seeks, int, S_IRUGO | S_IWUSR);
