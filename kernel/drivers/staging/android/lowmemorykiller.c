@@ -34,6 +34,7 @@
 #include <linux/mm.h>
 #include <linux/oom.h>
 #include <linux/sched.h>
+#include <linux/rcupdate.h>
 #include <linux/notifier.h>
 
 static uint32_t lowmem_debug_level = 1;
@@ -44,7 +45,7 @@ static int lowmem_adj[6] = {
 	12,
 };
 static int lowmem_adj_size = 4;
-static size_t lowmem_minfree[6] = {
+static int lowmem_minfree[6] = {
 	3 * 512,	/* 6MB */
 	2 * 1024,	/* 8MB */
 	4 * 1024,	/* 16MB */
@@ -60,7 +61,7 @@ static int lowmem_minfree_size = 4;
 
 static int lowmem_shrink(int nr_to_scan, gfp_t gfp_mask)
 {
-	struct task_struct *p;
+	struct task_struct *tsk;
 	struct task_struct *selected[2] = { NULL, NULL };
 	int rem = 0;
 	int tasksize;
@@ -95,59 +96,57 @@ static int lowmem_shrink(int nr_to_scan, gfp_t gfp_mask)
 		return rem;
 	}
 
-	read_lock(&tasklist_lock);
-	for_each_process(p) {
-		struct mm_struct *mm;
-		struct signal_struct *sig;
+	rcu_read_lock();
+	for_each_process(tsk) {
+		struct task_struct *p;
 		int oom_adj;
 
-		task_lock(p);
-		mm = p->mm;
-		sig = p->signal;
-
-		if (!mm || !sig) {
-			task_unlock(p);
+		if (tsk->flags & PF_KTHREAD)
 			continue;
-		}
+
+		p = find_lock_task_mm(tsk);
+		if(!p)
+			continue;
 
 		if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
 			task_unlock(p);
-			read_unlock(&tasklist_lock);
+			rcu_read_unlock();
 			return 0;
 		}
 
-		oom_adj = sig->oom_adj;
+		oom_adj = p->signal->oom_adj;
 		if (oom_adj < min_adj) {
 			task_unlock(p);
 			continue;
 		}
 
-		tasksize = get_mm_rss(mm);
+		tasksize = get_mm_rss(p->mm);
 		task_unlock(p);
 
 		if (tasksize <= 0)
 			continue;
 
-        if (selected[0] == NULL)
-        {
-            selected[0] = p;    
-            selected_tasksize[0] = tasksize;
-        }
-        else if (selected[1] == NULL)
-        {
-            selected[1] = p;
-            selected_tasksize[1] = tasksize;
-            break;
-        }
-    }
-    for (i = 0; i < 2 && selected[i] != NULL; i++)
-    {
-        lowmem_print(1, "lowmem_shrink send sigkill(%s)(%p), tasksize[%d]\n", selected[i]->comm, selected[i], selected_tasksize[i]); 
-        send_sig(SIGKILL, selected[i], 0);
-	set_tsk_thread_flag(selected[i], TIF_MEMDIE);
-        rem -= selected_tasksize[i];
-    }
-	read_unlock(&tasklist_lock);
+		if (selected[0] == NULL)
+		{
+		    selected[0] = p;    
+		    selected_tasksize[0] = tasksize;
+		}
+		else if (selected[1] == NULL)
+		{
+		    selected[1] = p;
+		    selected_tasksize[1] = tasksize;
+		    break;
+		}
+	}
+
+	for (i = 0; i < 2 && selected[i] != NULL; i++)
+	{
+		lowmem_print(1, "lowmem_shrink send sigkill(%s)(%p), tasksize[%d]\n", selected[i]->comm, selected[i], selected_tasksize[i]); 
+		send_sig(SIGKILL, selected[i], 0);
+		set_tsk_thread_flag(selected[i], TIF_MEMDIE);
+		rem -= selected_tasksize[i];
+	}
+	rcu_read_unlock();
 	return rem;
 }
 //110219, gunwoo1.kim@lge.com, kill 2 processes at once [END]

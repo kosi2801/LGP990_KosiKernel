@@ -87,6 +87,16 @@ Based on Spica SR3R
 -- http://www.digipedia.pl/usenet/thread/18762/95/
 - optimize build flags
 - turn off WLAN deepsleep, hoping for better wireless stability
+- backport android, lowmemorykiller: remove task handoff notifier 
+-- backport from https://github.com/vadonka/lge-kernel-kang/commit/2b8814252deb7b194c3274d0cd0f741009e053c4
+- backport further optimizations to lowmemorykiller
+-- https://github.com/vadonka/lge-kernel-kang/commit/4b4ae4434b03a4ad3716b02be3df3256e72dcb7a
+-- https://github.com/vadonka/lge-kernel-kang/commit/93969b848dace43fc5fcad3280a0f5e617f443a3
+-- https://github.com/vadonka/lge-kernel-kang/commit/93969b848dace43fc5fcad3280a0f5e617f443a3
+--- https://github.com/vadonka/lge-kernel-kang/blob/93969b848dace43fc5fcad3280a0f5e617f443a3/include/linux/oom.h
+--- https://github.com/vadonka/lge-kernel-kang/blob/93969b848dace43fc5fcad3280a0f5e617f443a3/mm/oom_kill.c
+-- https://github.com/vadonka/lge-kernel-kang/commit/c2d75a4c5dd057fb5d28f92c733fee644e028d96
+-- https://github.com/vadonka/lge-kernel-kang/commit/5e5e010ecedc83cd0397efda0d123e26cb6ca0a0
 
 TODO:
 - cherrypicking from vadonka
