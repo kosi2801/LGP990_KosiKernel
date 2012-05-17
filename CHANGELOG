@@ -97,6 +97,7 @@ Based on Spica SR3R
 --- https://github.com/vadonka/lge-kernel-kang/blob/93969b848dace43fc5fcad3280a0f5e617f443a3/mm/oom_kill.c
 -- https://github.com/vadonka/lge-kernel-kang/commit/c2d75a4c5dd057fb5d28f92c733fee644e028d96
 -- https://github.com/vadonka/lge-kernel-kang/commit/5e5e010ecedc83cd0397efda0d123e26cb6ca0a0
+- remove useless dump_stack() from binder.c
 
 TODO:
 - cherrypicking from vadonka
