@@ -98,6 +98,7 @@ Based on Spica SR3R
 -- https://github.com/vadonka/lge-kernel-kang/commit/c2d75a4c5dd057fb5d28f92c733fee644e028d96
 -- https://github.com/vadonka/lge-kernel-kang/commit/5e5e010ecedc83cd0397efda0d123e26cb6ca0a0
 - remove useless dump_stack() from binder.c
+- optimizing buildflags, adapting kernel config to build with gcc 4.7.1
 
 TODO:
 - cherrypicking from vadonka
