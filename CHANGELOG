@@ -86,6 +86,7 @@ Based on Spica SR3R
 - added missing code for support of cgroup timer slack, update to v10
 -- http://www.digipedia.pl/usenet/thread/18762/95/
 - optimize build flags
+- turn off WLAN deepsleep, hoping for better wireless stability
 
 TODO:
 - cherrypicking from vadonka
