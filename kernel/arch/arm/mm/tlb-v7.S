@@ -50,12 +50,6 @@ ENTRY(v7wbi_flush_user_tlb_range)
 	add	r0, r0, #PAGE_SZ
 	cmp	r0, r1
 	blo	1b
-	mov	ip, #0
-#ifdef CONFIG_SMP
-	mcr	p15, 0, ip, c7, c1, 6		@ flush BTAC/BTB Inner Shareable
-#else
-	mcr	p15, 0, ip, c7, c5, 6		@ flush BTAC/BTB
-#endif
 	dsb
 	mov	pc, lr
 ENDPROC(v7wbi_flush_user_tlb_range)
@@ -83,12 +77,6 @@ ENTRY(v7wbi_flush_kern_tlb_range)
 	add	r0, r0, #PAGE_SZ
 	cmp	r0, r1
 	blo	1b
-	mov	r2, #0
-#ifdef CONFIG_SMP
-	mcr	p15, 0, r2, c7, c1, 6		@ flush BTAC/BTB Inner Shareable
-#else
-	mcr	p15, 0, r2, c7, c5, 6		@ flush BTAC/BTB
-#endif
 	dsb
 	isb
 	mov	pc, lr
