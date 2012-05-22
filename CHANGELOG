@@ -98,6 +98,9 @@ Based on Spica SR3R
 -- https://github.com/vadonka/lge-kernel-kang/commit/c2d75a4c5dd057fb5d28f92c733fee644e028d96
 -- https://github.com/vadonka/lge-kernel-kang/commit/5e5e010ecedc83cd0397efda0d123e26cb6ca0a0
 - remove useless dump_stack() from binder.c
+- port some Linux 3.4 changes
+-- lib/cpumask.c: remove __any_online_cpu()
+--- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=38b93780a5381961ad92d24ab9a12a964189a3a4
 - optimizing buildflags, adapting kernel config to build with gcc 4.7.1
 -- keep compiling with 4.6.1, wireless.ko seems not working with 4.7.1
 
