@@ -104,7 +104,9 @@ Based on Spica SR3R
 -- ARM: tlb: move noMMU tlb_flush() to asm/tlb.h
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=58e9c47fa0dd76693b2c85c010c7430a4de77c6d
 -- ARM: btc: avoid invalidating the branch target cache on kernel TLB maintanence
---- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=4348810a241a330d3d143d62d7c988ec8b2e6629#patch1
+--- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=4348810a241a330d3d143d62d7c988ec8b2e6629
+-- ARM: Optimize multi-CPU tlb flushing a little more 
+--- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=87067a935a174cf5e0b336d338a0ab535ffe199d
 
 - optimizing buildflags, adapting kernel config to build with gcc 4.7.1
 -- keep compiling with 4.6.1, wireless.ko seems not working with 4.7.1
