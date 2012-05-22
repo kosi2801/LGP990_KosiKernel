@@ -2344,7 +2344,6 @@
 0x0064d950	i2c_new_dummy	vmlinux	EXPORT_SYMBOL_GPL
 0xb0a3a5ec	register_mtd_chip_driver	vmlinux	EXPORT_SYMBOL
 0x2f7821b6	__fsnotify_inode_delete	vmlinux	EXPORT_SYMBOL_GPL
-0x6e09073c	__any_online_cpu	vmlinux	EXPORT_SYMBOL
 0x823561d0	deregister_mtd_parser	vmlinux	EXPORT_SYMBOL_GPL
 0xe264d931	jbd2_journal_release_buffer	vmlinux	EXPORT_SYMBOL
 0xa37d7909	lookup_instantiate_filp	vmlinux	EXPORT_SYMBOL_GPL
