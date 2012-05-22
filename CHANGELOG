@@ -99,14 +99,18 @@ Based on Spica SR3R
 -- https://github.com/vadonka/lge-kernel-kang/commit/5e5e010ecedc83cd0397efda0d123e26cb6ca0a0
 - remove useless dump_stack() from binder.c
 - optimizing buildflags, adapting kernel config to build with gcc 4.7.1
+-- keep compiling with 4.6.1, wireless.ko seems not working with 4.7.1
 
 TODO:
+- make kernel modules work with gcc 4.7.1
+-- or build modules with 4.6.1 ?
 - cherrypicking from vadonka
-
 -- https://github.com/vadonka/lge-kernel-kang/commit/6f334518cf4f42f45dd243ac29c0d7d1ed0a3da0
 -- https://github.com/vadonka/lge-kernel-kang/commit/d8800bb869ab7f0ca2df165d8e000cdaee2f3765
 -- https://github.com/vadonka/lge-kernel-kang/commit/de29f457c300a4e327bdfab5c3ac6df5b7f679fa
 -- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
+- update Fake_shmoo OC code
+-- don't forget to analyze & merge spica OTF code
 
 
 - minimize compiled size of kernel and modules
