@@ -107,7 +107,12 @@ Based on Spica SR3R
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=4348810a241a330d3d143d62d7c988ec8b2e6629
 -- ARM: Optimize multi-CPU tlb flushing a little more 
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=87067a935a174cf5e0b336d338a0ab535ffe199d
-
+- merge changes from 21y
+-- arch/arm/include/asm/io.h
+-- drivers/serial/tegra_hsuart.c
+-- drivers/video/tegra/nvmap.c
+-- kernel/power/suspend.c
+-- kernel/groups.c
 - optimizing buildflags, adapting kernel config to build with gcc 4.7.1
 -- keep compiling with 4.6.1, wireless.ko seems not working with 4.7.1
 
@@ -121,7 +126,9 @@ TODO:
 -- https://github.com/vadonka/lge-kernel-kang/commit/88f6071333255e0f778616dbe8acb22d74636ea2
 - update Fake_shmoo OC code
 -- don't forget to analyze & merge spica OTF code
-
+- merge from Linux 3.3
+-- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=442e70c0b3536e832547eed89629435462f4b515
+-- ... and required/depending changes  
 
 - minimize compiled size of kernel and modules
 - update BCM4329 to latest version findable

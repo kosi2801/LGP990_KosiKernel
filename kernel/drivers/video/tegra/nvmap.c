@@ -21,7 +21,7 @@
  */
 
 #define NV_DEBUG 0
-#define NVMAP_DEBUG_FS 1
+#define NVMAP_DEBUG_FS 0
 #define NVMAP_DEBUG_COMPACTION 0
 
 
