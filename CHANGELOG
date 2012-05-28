@@ -98,7 +98,7 @@ Based on Spica SR3R
 -- https://github.com/vadonka/lge-kernel-kang/commit/c2d75a4c5dd057fb5d28f92c733fee644e028d96
 -- https://github.com/vadonka/lge-kernel-kang/commit/5e5e010ecedc83cd0397efda0d123e26cb6ca0a0
 - remove useless dump_stack() from binder.c
-- port some Linux 3.3, 3.4 changes
+- port some Linux 2.6, 3.3, 3.4 changes
 -- lib/cpumask.c: remove __any_online_cpu()
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=38b93780a5381961ad92d24ab9a12a964189a3a4
 -- ARM: tlb: move noMMU tlb_flush() to asm/tlb.h
@@ -107,8 +107,11 @@ Based on Spica SR3R
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=4348810a241a330d3d143d62d7c988ec8b2e6629
 -- ARM: Optimize multi-CPU tlb flushing a little more 
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=87067a935a174cf5e0b336d338a0ab535ffe199d
+-- ARM: prevent VM_GROWSDOWN mmaps extending below FIRST_USER_ADDRESS
+--- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=9b61a4d1b2064dbd0c9e61754305ac852170509f
 - merge changes from 21y
 -- arch/arm/include/asm/io.h
+-- arch/arm/mm/cache-l2x0.c
 -- drivers/serial/tegra_hsuart.c
 -- drivers/video/tegra/nvmap.c
 -- kernel/power/suspend.c
