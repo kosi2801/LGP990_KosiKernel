@@ -110,6 +110,8 @@ Based on Spica SR3R
 
 - optimizing buildflags, adapting kernel config to build with gcc 4.7.1
 -- keep compiling with 4.6.1, wireless.ko seems not working with 4.7.1
+- enable notification of free swap-pages to ramzswap
+-- add kernel option which is selected by ramzswap to enable patches in kernel sources even if ramzswap is built only as kernel module
 
 TODO:
 - make kernel modules work with gcc 4.7.1
