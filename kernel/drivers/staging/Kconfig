@@ -41,6 +41,14 @@ config STAGING_EXCLUDE_BUILD
 
 if !STAGING_EXCLUDE_BUILD
 
+config NOTIFY_PAGE_FREE
+	bool
+	default n
+	help
+	  Selected when building with Ramzswap or Zram. Enables notification
+	  of the driver when a swappage becomes free.
+
+
 source "drivers/staging/et131x/Kconfig"
 
 source "drivers/staging/slicoss/Kconfig"
@@ -126,6 +134,8 @@ source "drivers/staging/sep/Kconfig"
 source "drivers/staging/iio/Kconfig"
 
 source "drivers/staging/ramzswap/Kconfig"
+
+source "drivers/staging/zram/Kconfig"
 
 endif # !STAGING_EXCLUDE_BUILD
 endif # STAGING

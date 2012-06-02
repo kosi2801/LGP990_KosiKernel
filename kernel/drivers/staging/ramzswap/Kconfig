@@ -1,6 +1,7 @@
 config RAMZSWAP
 	tristate "Compressed in-memory swap device (ramzswap)"
 	depends on SWAP
+	select NOTIFY_PAGE_FREE
 	default n
 	help
 	  Creates virtual block devices which can (only) be used as swap
