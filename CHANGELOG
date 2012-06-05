@@ -107,11 +107,13 @@ Based on Spica SR3R
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=4348810a241a330d3d143d62d7c988ec8b2e6629
 -- ARM: Optimize multi-CPU tlb flushing a little more 
 --- https://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=87067a935a174cf5e0b336d338a0ab535ffe199d
-
 - optimizing buildflags, adapting kernel config to build with gcc 4.7.1
 -- keep compiling with 4.6.1, wireless.ko seems not working with 4.7.1
 - enable notification of free swap-pages to ramzswap
 -- add kernel option which is selected by ramzswap to enable patches in kernel sources even if ramzswap is built only as kernel module
+
+007
+- 
 
 TODO:
 - make kernel modules work with gcc 4.7.1
