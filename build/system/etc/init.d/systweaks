@@ -19,5 +19,21 @@ rzscontrol /dev/block/ramzswap$i --init;
 busybox swapon -p $i /dev/block/ramzswap$i;
 done;
 
+#busybox insmod /system/lib/modules/zram.ko num_devices=2 ;
+#
+#(
+#echo $((92*1024*1024)) > /sys/block/zram0/disksize ;
+#busybox mkswap /dev/zram0 ;
+#busybox swapon /dev/zram0 ;
+#) & ;
+#
+#(
+#echo $((92*1024*1024)) > /sys/block/zram1/disksize ;
+#busybox mkswap /dev/zram1 ;
+#busybox swapon /dev/zram1 ;
+#) & ;
+#
+#busybox wait ;
+
 log -p i -t init.d/systweaks end
 
