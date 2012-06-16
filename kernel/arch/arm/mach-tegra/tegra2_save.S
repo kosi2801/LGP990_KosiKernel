@@ -95,7 +95,12 @@ __tear_down_master:
 	 * L2X0_AUX_CTRL, etc.) need to be cleaned to L3 so that they
 	 * will be visible on reboot.  skip this for LP0, since the L2 cache
 	 * will be shutdown before we reach this point */
+#ifdef __thumb2__
+	mov	r0, sp
+	tst	r0, #TEGRA_POWER_EFFECT_LP0
+#else
 	tst	sp, #TEGRA_POWER_EFFECT_LP0
+#endif
 	bne	__l2_clean_done
 	mov32	r0, (TEGRA_ARM_PL310_BASE-IO_CPU_PHYS+IO_CPU_VIRT)
 	add	r3, r8, #(CONTEXT_SIZE_BYTES)
@@ -116,7 +121,12 @@ __tear_down_master:
 __l2_clean_done:
 #endif
 
+#ifdef __thumb2__
+	mov	r0, sp
+	tst	r0, #TEGRA_POWER_SDRAM_SELFREFRESH
+#else
 	tst	sp, #TEGRA_POWER_SDRAM_SELFREFRESH
+#endif
 
 	/* preload all the address literals that are needed for the
 	 * CPU power-gating process, to avoid loads from SDRAM (which are
@@ -323,9 +333,18 @@ __lp1_pad_area:
 	.align L1_CACHE_SHIFT
 __tear_down_master_pll_cpu:
 	ldr	r0, [r4, #PMC_CTRL]
+#ifdef __thumb2__
+	mov	r1, sp
+	bfi	r0, r1, #PMC_CTRL_BFI_SHIFT, #PMC_CTRL_BFI_WIDTH
+#else
 	bfi	r0, sp, #PMC_CTRL_BFI_SHIFT, #PMC_CTRL_BFI_WIDTH
+#endif
 	str	r0, [r4, #PMC_CTRL]
+#ifdef __thumb2__
+	tst	r1, #TEGRA_POWER_SDRAM_SELFREFRESH
+#else
 	tst	sp, #TEGRA_POWER_SDRAM_SELFREFRESH
+#endif
 
 	/* in LP2 idle (SDRAM active), set the CPU burst policy to PLLP */
 	moveq	r0, #(2<<28)    /* burst policy = run mode */

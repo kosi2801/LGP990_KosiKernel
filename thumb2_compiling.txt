@@ -1,0 +1,10 @@
+https://groups.google.com/a/chromium.org/group/chromium-os-reviews/browse_thread/thread/bf71cd3d5e914a2e/1345bdd89969c932
+http://www.keil.com/support/man/docs/armasmref/armasmref_cjacbgca.htm
+http://lists.infradead.org/pipermail/linux-arm-kernel/2010-September/027285.html
+http://sourceware.org/ml/newlib/2008/msg00208.html
+
+https://wiki.ubuntu.com/ARM/Thumb2
+https://wiki.ubuntu.com/ARM/Thumb2PortingHowto
+www.informatik.uni-ulm.de/ni/Lehre/WS01/TI2/folien/ciscC.PDF
+http://www.cems.uwe.ac.uk/~cduffy/es/ARMstacks.doc
+http://simplemachines.it/doc/arm_inst.pdf

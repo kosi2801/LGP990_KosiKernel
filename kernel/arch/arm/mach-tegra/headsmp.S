@@ -47,7 +47,12 @@
  *	 secondary_startup routine
  */
 ENTRY(tegra_secondary_startup)
+#ifdef __thumb2__
+	mov	r0, #0xd3
+	msr	cpsr_fsxc, r0
+#else
 	msr	cpsr_fsxc, #0xd3
+#endif
 	bl	__invalidate_cpu_state
 	cpu_id	r0
 	enable_coresite r1

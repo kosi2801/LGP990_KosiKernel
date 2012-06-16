@@ -389,7 +389,7 @@ CONFIG_PREEMPT=y
 CONFIG_HZ=100
 ##
 # Turn config_thumb2_kernel off when linking with gcc *ld.gold, causes internal linker bug for now
-#CONFIG_THUMB2_KERNEL=y
+CONFIG_THUMB2_KERNEL=y
 CONFIG_ARM_ASM_UNIFIED=y
 CONFIG_AEABI=y
 ##
