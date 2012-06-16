@@ -56,7 +56,6 @@ EXTRA_CFLAGS = \
 	-Wall -Wstrict-prototypes -Werror -Wno-unused-but-set-variable -Wno-array-bounds \
 	-I$(SRCROOT) \
 	-I$(SRCROOT)/include \
--Wno-array-bounds \
 	-I$(SRCROOT)/shared \
 	-I$(SRCROOT)/dhd/sys \
 	-I$(SRCROOT)/dongle \
