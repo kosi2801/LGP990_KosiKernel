@@ -113,7 +113,10 @@ Based on Spica SR3R
 -- add kernel option which is selected by ramzswap to enable patches in kernel sources even if ramzswap is built only as kernel module
 
 007
-- 
+- use linaro optimized string and memory functions for ARMv7
+-- http://review.android.git.linaro.org/#change,2249,patchset=4
+-- port from linaro rom compilation to stock kernel compilation
+
 
 TODO:
 - make kernel modules work with gcc 4.7.1

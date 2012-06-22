@@ -121,5 +121,5 @@ ENTRY(memset)
 
 10:
 	bx	lr		@ goodbye
-ENDPROC(memset)
+END(memset)
 

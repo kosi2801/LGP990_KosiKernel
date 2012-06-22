@@ -37,7 +37,6 @@
    match early in a large data set. */
 
 #include <linux/linkage.h>
-//#include <asm/assembler.h>
 
 @ 2011-02-07 david.gilbert@linaro.org
 @    Extracted from local git a5b438d861
@@ -148,5 +147,5 @@ ENTRY(memchr)
 	pop	{r4,r5,r6,r7}
 	subs	r0,r0,#1
 	bx	lr
-ENDPROC(memchr)
+END(memchr)
 

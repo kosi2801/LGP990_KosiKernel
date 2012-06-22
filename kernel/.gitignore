@@ -83,7 +83,6 @@ GTAGS
 # version/compilation dependend files
 .config 
 .version
-Module.symvers
 include/config/auto.conf
 include/config/auto.conf.cmd
 include/config/kernel.release

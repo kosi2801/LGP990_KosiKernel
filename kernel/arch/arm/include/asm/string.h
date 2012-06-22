@@ -6,11 +6,17 @@
  * optimised inline asm versions are not small.
  */
 
+#define __HAVE_ARCH_STRCPY
+extern char * strcpy (char* dst, const char * src);
+
 #define __HAVE_ARCH_STRRCHR
 extern char * strrchr(const char * s, int c);
 
 #define __HAVE_ARCH_STRCHR
 extern char * strchr(const char * s, int c);
+
+#define __HAVE_ARCH_STRLEN
+extern __kernel_size_t strlen(const char *s);
 
 #define __HAVE_ARCH_MEMCPY
 extern void * memcpy(void *, const void *, __kernel_size_t);

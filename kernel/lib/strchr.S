@@ -31,95 +31,48 @@
    Written by Dave Gilbert <david.gilbert@linaro.org>
    Adapted to Bionic by Bernhard Rosenkraenzer <Bernhard.Rosenkranzer@linaro.org>
 
-   This memset routine is optimised on a Cortex-A9 and should work on
-   all ARMv7 processors. */
+   A very simple strchr routine, from benchmarks on A9 it's a bit faster than
+   the current version in eglibc (2.12.1-0ubuntu14 package)
+   I don't think doing a word at a time version is worth it since a lot
+    of strchr cases are very short anyway */
 
 #include <linux/linkage.h>
+
+@ 2011-02-07 david.gilbert@linaro.org
+@    Extracted from local git a5b438d861
 
 	.syntax unified
 	.arch armv7-a
 
-ENTRY(bzero)
-	mov     r2, r1
-	mov     r1, #0
-END(bzero)
-
-@ 2011-08-30 david.gilbert@linaro.org
-@    Extracted from local git 2f11b436
-
-@ this lets us check a flag in a 00/ff byte easily in either endianness
-#ifdef __ARMEB__
-#define CHARTSTMASK(c) 1<<(31-(c*8))
-#else
-#define CHARTSTMASK(c) 1<<(c*8)
-#endif
 	.text
 	.thumb
 
 @ ---------------------------------------------------------------------------
+
 	.thumb_func
 	.p2align 4,,15
-ENTRY(memset)
-	@ r0 = address
-	@ r1 = character
-	@ r2 = count
-	@ returns original address in r0
+ENTRY(strchr)
+	@ r0 = start of string
+	@ r1 = character to match
+	@ returns NULL for no match, or a pointer to the match
+	and	r1,r1, #255
 
-	mov	r3, r0		@ Leave r0 alone
-	cbz	r2, 10f		@ Exit if 0 length
-
-	tst	r0, #7
-	beq	2f		@ Already aligned
-
-	@ Ok, so we're misaligned here
 1:
-	strb	r1, [r3], #1
-	subs	r2,r2,#1
-	tst	r3, #7
-	cbz	r2, 10f		@ Exit if we hit the end
-	bne	1b		@ go round again if still misaligned
+	ldrb	r2,[r0],#1
+	cmp	r2,r1
+	cbz	r2,10f
+	bne	1b
 
-2:
-	@ OK, so we're aligned
-	push	{r4,r5,r6,r7}
-	bics	r4, r2, #15	@ if less than 16 bytes then need to finish it off
-	beq	5f
-
-3:
-	@ POSIX says that ch is cast to an unsigned char.  A uxtb is one
-	@ byte and takes two cycles, where an AND is four bytes but one
-	@ cycle.
-	and	r1, #0xFF
-	orr	r1, r1, r1, lsl#8	@ Same character into all bytes
-	orr	r1, r1, r1, lsl#16
-	mov	r5,r1
-	mov	r6,r1
-	mov	r7,r1
-
-4:
-	subs	r4,r4,#16
-	stmia	r3!,{r1,r5,r6,r7}
-	bne	4b
-	and	r2,r2,#15
-
-	@ At this point we're still aligned and we have upto align-1 bytes left to right
-	@ we can avoid some of the byte-at-a time now by testing for some big chunks
-	tst	r2,#8
-	itt	ne
-	subne	r2,r2,#8
-	stmiane	r3!,{r1,r5}
-
+	@ We're here if it matched
 5:
-	pop	{r4,r5,r6,r7}
-	cbz	r2, 10f
-
-	@ Got to do any last < alignment bytes
-6:
-	subs	r2,r2,#1
-	strb	r1,[r3],#1
-	bne	6b
+	subs	r0,r0,#1
+	bx	lr
 
 10:
-	bx	lr		@ goodbye
-ENDPROC(memset)
+	@ We're here if we ran off the end
+	cmp	r1, #0	@ Corner case - you're allowed to search for the nil and get a pointer to it
+	beq	5b	@ A bit messy, if it's common we should branch at the start to a special loop
+	mov	r0,#0
+	bx	lr
+END(strchr)
 
