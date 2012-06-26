@@ -11,8 +11,8 @@ cd kernel
 make clean
 make kosi_defconfig
 #make -j3 ARCH=arm CROSS_COMPILE=/home/kosi/src/gcc-4.7.1/vadonka-linaro-toolchains-4.x.y-8f57ec7/4.7.1/bin/arm-linux-androideabi- STAR_TMUS_REV=TMUS_10 TARGET_STAR_HWREV=TMUS_E TARGET_MODEM=ifx
-#make -j3 ARCH=arm CROSS_COMPILE=/home/kosi/bin/gcc-linaro-arm-linux-gnueabihf-2012.05-20120523_linux/bin/arm-linux-gnueabihf- STAR_TMUS_REV=TMUS_10 TARGET_STAR_HWREV=TMUS_E TARGET_MODEM=ifx
-make -j3 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- STAR_TMUS_REV=TMUS_10 TARGET_STAR_HWREV=TMUS_E TARGET_MODEM=ifx
+make -j3 ARCH=arm CROSS_COMPILE=/home/kosi/bin/gcc-linaro-arm-linux-gnueabihf-2012.05-20120523_linux/bin/arm-linux-gnueabihf- STAR_TMUS_REV=TMUS_10 TARGET_STAR_HWREV=TMUS_E TARGET_MODEM=ifx
+#make -j3 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- STAR_TMUS_REV=TMUS_10 TARGET_STAR_HWREV=TMUS_E TARGET_MODEM=ifx
 
 
 if [ $? -eq 0 ] ; then

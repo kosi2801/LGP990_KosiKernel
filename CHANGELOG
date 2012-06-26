@@ -113,7 +113,8 @@ Based on Spica SR3R
 -- add kernel option which is selected by ramzswap to enable patches in kernel sources even if ramzswap is built only as kernel module
 
 007
-- 
+- some more tweaking of buildflags, adaptions to kernel config
+- build with gcc 4.7.0 from linaro 12/05
 
 TODO:
 - make kernel modules work with gcc 4.7.1
