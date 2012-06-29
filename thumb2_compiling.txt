@@ -1,3 +1,4 @@
+http://lists.infradead.org/pipermail/linux-arm-kernel/2010-July/022114.html
 https://groups.google.com/a/chromium.org/group/chromium-os-reviews/browse_thread/thread/bf71cd3d5e914a2e/1345bdd89969c932
 http://www.keil.com/support/man/docs/armasmref/armasmref_cjacbgca.htm
 http://lists.infradead.org/pipermail/linux-arm-kernel/2010-September/027285.html

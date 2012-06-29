@@ -166,12 +166,10 @@ ENTRY(__cortex_a9_save)
 	mov	r1, sp
 	stmfd	sp!, {r3-r12, lr}
 
-#ifdef __thumb2__
-	mov	r2, sp
-	bic	r2, r2, #(L1_CACHE_BYTES-1)
-#else
-	bic	r2, sp, #(L1_CACHE_BYTES-1)
-#endif
+
+ ARM(	bic	r2, sp, #(L1_CACHE_BYTES-1) )
+ THUMB(	mov	r2, sp )
+ THUMB(	bic	r2, r2, #(L1_CACHE_BYTES-1) )
 
 1:	mcr	p15, 0, r2, c7, c14, 1	@ clean out dirty stack cachelines
 	add	r2, r2, #L1_CACHE_BYTES
@@ -246,53 +244,38 @@ ENTRY(__cortex_a9_save)
 
 	cps	0x1f			@ SYS mode
 	add	r9, r8, #CTX_SYS_SP	
-#ifdef __thumb2__
- 	stmia	r9, {lr}
- 	str	sp, [r9],#+4
-#else
-  	stmia	r9, {sp,lr}
-#endif
+ ARM(	stmia	r9, {sp,lr} )
+ THUMB(	stmia	r9, {lr} )
+ THUMB(	str	sp, [r9],#+4 )
 
 	cps	0x17			@ Abort mode
 	mrs	r12, spsr
 	add	r9, r8, #CTX_ABT_SPSR
-#ifdef __thumb2__
- 	stmia	r9, {r12,lr}
- 	str	sp, [r9],#+4
-#else
-	stmia	r9, {r12,sp,lr}
-#endif
+ ARM(	stmia	r9, {r12,sp,lr} )
+ THUMB(	stmia	r9, {r12,lr} )
+ THUMB(	str	sp, [r9],#+8 )
 
 	cps	0x12			@ IRQ mode
 	mrs	r12, spsr
 	add	r9, r8, #CTX_IRQ_SPSR
-#ifdef __thumb2__
- 	stmia	r9, {r12,lr}
- 	str	sp, [r9],#+4
-#else
-	stmia	r9, {r12,sp,lr}
-#endif
+ ARM (	stmia	r9, {r12,sp,lr} )
+ THUMB(	stmia	r9, {r12,lr} )
+ THUMB(	str	sp, [r9],#+8 )
 
 	cps	0x1b			@ Undefined mode
 	mrs	r12, spsr
 	add	r9, r8, #CTX_UND_SPSR
-#ifdef __thumb2__
- 	stmia	r9, {r12,lr}
- 	str	sp, [r9],#+4
-#else
-	stmia	r9, {r12,sp,lr}
-#endif
+ ARM(	stmia	r9, {r12,sp,lr} )
+ THUMB(	stmia	r9, {r12,lr} )
+ THUMB(	str	sp, [r9],#+8 )
 
 	mov	r0, r8
 	add	r1, r8, #CTX_FIQ_SPSR
 	cps	0x11			@ FIQ mode
 	mrs	r7, spsr
-#ifdef __thumb2__
-	stmia	r1, {r7-r12,lr}
- 	str	sp, [r1],#+4
-#else
-	stmia	r1, {r7-r12,sp,lr}
-#endif
+ ARM(	stmia	r1, {r7-r12,sp,lr} )
+ THUMB(	stmia	r1, {r7-r12,lr} )
+ THUMB(	str	sp, [r1],#+28 )
 
 	cps	0x13			@ back to SVC
 	mov	r8, r0
@@ -400,51 +383,36 @@ ENTRY(__cortex_a9_restore)
 
 	cps	0x11			@ FIQ mode
 	add	r1, r0, #CTX_FIQ_SPSR
-#ifdef __thumb2__
-	ldmia	r1, {r7-r12,lr}
- 	ldr	sp, [r1],#+4
-#else
-	ldmia	r1, {r7-r12,sp,lr}
-#endif
+ ARM(	ldmia	r1, {r7-r12,sp,lr} )
+ THUMB(	ldmia	r1, {r7-r12,lr} )
+ THUMB(	ldr	sp, [r1],#+28 )
 	msr	spsr_fsxc, r7
 
 	cps	0x12			@ IRQ mode
 	add	r1, r0, #CTX_IRQ_SPSR
-#ifdef __thumb2__
-	ldmia	r1, {r12, lr}
- 	ldr	sp, [r1],#+4
-#else
-	ldmia	r1, {r12, sp, lr}
-#endif
+ ARM(	ldmia	r1, {r12, sp, lr} )
+ THUMB(	ldmia	r1, {r12, lr} )
+ THUMB(	ldr	sp, [r1],#+8 )
 	msr	spsr_fsxc, r12
 
 	cps	0x17			@ abort mode
 	add	r1, r0, #CTX_ABT_SPSR
-#ifdef __thumb2__
-	ldmia	r1, {r12, lr}
- 	ldr	sp, [r1],#+4
-#else
-	ldmia	r1, {r12, sp, lr}
-#endif
+ ARM(	ldmia	r1, {r12, sp, lr} )
+ THUMB(	ldmia	r1, {r12, lr} )
+ THUMB(	ldr	sp, [r1],#+8 )
 	msr	spsr_fsxc, r12
 
 	cps	0x1f			@ SYS mode
 	add	r1, r0, #CTX_SYS_SP
-#ifdef __thumb2__
-	ldmia	r1, {lr}
- 	ldr	sp, [r1],#+4
-#else
-	ldmia	r1, {sp, lr}
-#endif
+ ARM(	ldmia	r1, {sp, lr} )
+ THUMB(	ldmia	r1, {lr} )
+ THUMB(	ldr	sp, [r1],#+4 )
 
 	cps	0x1b			@ Undefined mode
 	add	r1, r0, #CTX_UND_SPSR
-#ifdef __thumb2__
-	ldmia	r1, {r12, lr}
- 	ldr	sp, [r1],#+4
-#else
-	ldmia	r1, {r12, sp, lr}
-#endif
+ ARM(	ldmia	r1, {r12, sp, lr} )
+ THUMB(	ldmia	r1, {r12, lr} )
+ THUMB(	ldr	sp, [r1],#+8 )
 	msr	spsr_fsxc, r12
 
 	cps	0x13			@ back to SVC

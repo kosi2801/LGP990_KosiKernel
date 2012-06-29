@@ -341,6 +341,7 @@ __tear_down_master_pll_cpu:
 #endif
 	str	r0, [r4, #PMC_CTRL]
 #ifdef __thumb2__
+	mov	r1, sp
 	tst	r1, #TEGRA_POWER_SDRAM_SELFREFRESH
 #else
 	tst	sp, #TEGRA_POWER_SDRAM_SELFREFRESH
