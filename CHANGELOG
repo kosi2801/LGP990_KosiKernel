@@ -114,7 +114,7 @@ Based on Spica SR3R
 
 007
 - some more tweaking of buildflags, adaptions to kernel config
-- build with gcc 4.7.0 from linaro 12/05
+- prepare build with gcc 4.7.0 from linaro 12/06, stay building with gcc 4.6 as benchmarks are currently slower 
 
 TODO:
 - make kernel modules work with gcc 4.7.1
